@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/disburse', \App\Actions\RequestDisbursementAction::class)
+//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
+    ->middleware(['auth:sanctum'])
+    ->name('disbursement-payment');
