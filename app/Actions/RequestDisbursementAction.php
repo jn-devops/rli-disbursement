@@ -2,24 +2,16 @@
 
 namespace App\Actions;
 
-use Brick\Money\Money;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use Illuminate\Support\Fluent;
-use Lorisleiva\Actions\ActionRequest;
+use App\Data\{AmountData, DestinationAccountData, GatewayResponseData,  RecipientData};
 use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\Validator;
-use ReflectionMethod;
-use ReflectionProperty;
+use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
-use App\Classes\Gateway;
-use Illuminate\Support\{Arr, Str};
-use App\Data\GatewayResponseData;
-use App\Data\RecipientData;
-use App\Data\ContactData;
-use App\Data\DestinationAccountData;
-use App\Data\AmountData;
-use App\Classes\Address;
+use App\Classes\{Address, Gateway};
+use Illuminate\Support\Arr;
+use Brick\Money\Money;
+use ReflectionMethod;
+use Illuminate\Validation\Rule;
 
 /**
  * Class RequestDisbursementAction
@@ -30,7 +22,11 @@ class RequestDisbursementAction
 {
     use AsAction;
 
-    public function __construct(protected Gateway $gateway){}
+    protected string $currency = 'PHP';
+
+    public function __construct(protected Gateway $gateway)
+    {
+    }
 
     public static function execute(...$arguments): mixed
     {
@@ -49,38 +45,20 @@ class RequestDisbursementAction
 
     protected function disburse(array $validated): GatewayResponseData|bool
     {
-        $reference = Arr::get($validated, 'reference');
-        $via = Arr::get($validated, 'via');
-        $currency = 'PHP';
-        $amount =  Money::of(Arr::get($validated, 'amount'), $currency)->getMinorAmount()->toInt();
-        $account_number = config('disbursement.source.account_number');
-        $sender = config('disbursement.source.sender');
-        $destination_account = DestinationAccountData::from([
-            'bank_code' => Arr::get($validated, 'bank'),
-            'account_number' => Arr::get($validated, 'account_number')
-        ])->toArray();
-        $recipient = RecipientData::from(
-            [
-                "name" => Arr::get($validated, 'account_number'),
-                'address' => Address::generate()
-            ]
-        )->toArray();
-        $amount = AmountData::from([
-            "cur" => $currency,
-            "num" => (string) $amount
-        ])->toArray();
-
-        $body = [
-            "reference_id" => $reference,
-            "settlement_rail" => $via,
-            "amount" => $amount,
-            "source_account_number" => $account_number,
-            "sender" => $sender,
-            "destination_account" => $destination_account,
-            "recipient" => $recipient
-        ];
-
-        $response = Http::withHeaders($this->gateway->getHeaders())->asJson()->post($this->gateway->getEndPoint(), $body);
+        $response = Http::withHeaders($this->gateway->getHeaders())
+            ->asJson()
+            ->post(
+                $this->gateway->getEndPoint(),
+                [
+                    "reference_id" => Arr::get($validated, 'reference'),
+                    "settlement_rail" => Arr::get($validated, 'via'),
+                    "amount" => $this->getMinorAmount($validated),
+                    "source_account_number" => config('disbursement.source.account_number'),
+                    "sender" => config('disbursement.source.sender'),
+                    "destination_account" => $this->getDestinationAccount($validated),
+                    "recipient" => $this->getRecipient($validated)
+                ]
+            );
 
         return $response->successful() ? GatewayResponseData::from($response->json()) : false;
     }
@@ -95,12 +73,18 @@ class RequestDisbursementAction
      */
     public function rules(): array
     {
+        $min = config('disbursement.min');
+        $min_rule = 'min:' . $min;
+        $max = config('disbursement.max');
+        $max_rule = 'max:' . $max;
+        $settlement_rails = config('disbursement.settlement_rails');
+
         return [
             'reference' => ['required', 'string', 'min:2'],
             'bank' => ['required', 'string'],
             'account_number' => ['required', 'string'],
-            'via' => ['required', 'string'],
-            'amount' => ['required', 'integer', 'min:1', 'max:2'],
+            'via' => ['required', 'string', Rule::in($settlement_rails)],
+            'amount' => ['required', 'integer', $min_rule, $max_rule],
         ];
     }
 
@@ -109,5 +93,33 @@ class RequestDisbursementAction
         $response = $this->disburse($request->validated());
 
         return response($response->toJson(), 200);
+    }
+
+    protected function getDestinationAccount(array $validated): array
+    {
+        return DestinationAccountData::from([
+            'bank_code' => Arr::get($validated, 'bank'),
+            'account_number' => Arr::get($validated, 'account_number')
+        ])->toArray();
+    }
+
+    protected function getRecipient(array $validated): array
+    {
+        return RecipientData::from(
+            [
+                "name" => Arr::get($validated, 'account_number'),
+                'address' => Address::generate()
+            ]
+        )->toArray();
+    }
+
+    protected function getMinorAmount(array $validated): array
+    {
+        $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
+
+        return AmountData::from([
+            'cur' => $this->currency,
+            'num' => (string) $minor_amount
+        ])->toArray();
     }
 }
