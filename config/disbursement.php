@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'server' => [
+        'end-point' => env('GATEWAY_ENDPOINT'),
+    ],
     'source' => [
         'account_number' => env('SOURCE_ACCOUNT_NUMBER'),
         'sender' => [

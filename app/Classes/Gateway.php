@@ -33,7 +33,7 @@ class Gateway
 
     public function getEndPoint(): string
     {
-        return 'https://api-uat.netbank.ph/v1/transactions';
+        return config('disbursement.server.end-point');
     }
 
     public function getBanks(): array
