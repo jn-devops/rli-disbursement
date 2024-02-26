@@ -7,22 +7,35 @@ use Illuminate\Support\Facades\Http;
 
 class Gateway
 {
-    static public string $client_id = 'srHqBkNp57nzHyL1vC6N2o6Q';
+    /**
+     * @var string
+     */
+    static public string $client_id;
 
-    static public string $client_secret = 'w7yrXSGdXtp8s6Rb4Iwg75SlA4zrqx2Hmc2SWs1pCk6fp91i';
+    /**
+     * @var string
+     */
+    static public string $client_secret;
 
+    /**
+     * OAuth2 Basic Authentication
+     *
+     * @return string
+     */
     public function getToken(): string
     {
         $credentials = base64_encode(static::$client_id. ':' . static::$client_secret);
-        $response = Http::withHeaders([
-            'Authorization' => 'Basic ' . $credentials,
-        ])->asForm()->post('https://auth.netbank.ph/oauth2/token', [
-            'grant_type' => 'client_credentials',
-        ]);
+        $gateway_token_endpoint = config('disbursement.server.token-end-point');
+        $response = Http::withHeaders(['Authorization' => 'Basic ' . $credentials])
+            ->asForm()
+            ->post($gateway_token_endpoint, ['grant_type' => 'client_credentials']);
 
         return $response->json('access_token');
     }
 
+    /**
+     * @return string[]
+     */
     public function getHeaders(): array
     {
         return [
@@ -31,11 +44,17 @@ class Gateway
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getEndPoint(): string
     {
         return config('disbursement.server.end-point');
     }
 
+    /**
+     * @return array
+     */
     public function getBanks(): array
     {
         $json_file = 'banks_list.json';
