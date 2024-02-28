@@ -2,8 +2,10 @@
 
 namespace App\Actions;
 
-use App\Models\User;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\ActionRequest;
+use Illuminate\Support\Arr;
+use App\Models\User;
 
 class RequestDepositAction
 {
@@ -20,5 +22,24 @@ class RequestDepositAction
         $system = User::getSystem();
 
         return $system->transferFloat($user, $amount);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'amount' => ['required', 'int', 'min:1'],
+        ];
+    }
+
+    public function asController(ActionRequest $request)
+    {
+        $user = $request->user();
+        $amount = Arr::get($request->validated(), 'amount');
+        $transfer = $this->handle($user, $amount);
+
+        return back()->with('event', [
+            'name' => 'amount.deposited',
+            'data' => $transfer->toArray(),
+        ]);
     }
 }

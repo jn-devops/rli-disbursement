@@ -33,3 +33,6 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+
+Route::post('/topup', \App\Actions\RequestDepositAction::class)
+    ->name('topup');
