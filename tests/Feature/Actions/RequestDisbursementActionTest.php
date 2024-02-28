@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\Actions;
 
-use App\Data\GatewayResponseData;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Actions\RequestDisbursementAction;
-use Illuminate\Support\Facades\Event;
+use App\Data\GatewayResponseData;
 use App\Models\User;
 use Tests\TestCase;
 

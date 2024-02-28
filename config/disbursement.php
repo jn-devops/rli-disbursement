@@ -24,4 +24,15 @@ return [
     'min' => env('MINIMUM_DISBURSEMENT', 1),
     'max' => env('MAXIMUM_DISBURSEMENT', 2),
     'settlement_rails' =>   explode(',', env('SETTLEMENT_RAILS', 'INSTAPAY,PESONET')),
+    'user' => [
+        'system' => [
+            'name' => env('SYSTEM_NAME', 'RLI DevOps'),
+            'email' => env('SYSTEM_EMAIL', 'devops@joy-nostalg.com'),
+            'password' => env('SYSTEM_PASSWORD', '#Password1'),
+            'password_confirmation' => env('SYSTEM_PASSWORD', '#Password1'),
+        ],
+    ],
+    'wallet' => [
+        'initial_deposit' => env('INITIAL_DEPOSIT', 1000 * 1000 * 1000),
+    ],
 ];
