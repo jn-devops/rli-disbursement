@@ -1,12 +1,17 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { usePage } from "@inertiajs/vue3";
+let PHPeso = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'PHP',
+});
 </script>
 
 <template>
     <div>
         <div class="p-6 lg:p-8 bg-white dark:bg-gray-800 dark:bg-gradient-to-bl dark:from-gray-700/50 dark:via-transparent border-b border-gray-200 dark:border-gray-700">
-            <ApplicationLogo class="block h-12 w-auto" />
-
+<!--            <ApplicationLogo class="block h-12 w-auto" />-->
+            <h1>Balance: {{ PHPeso.format(usePage().props.agent.balanceFloat) }}</h1>
             <h1 class="mt-8 text-2xl font-medium text-gray-900 dark:text-white">
                 Welcome to your Disbursement application!
             </h1>
