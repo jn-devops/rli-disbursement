@@ -6,13 +6,13 @@ return [
         'token-end-point' => env('NETBANK_TOKEN_ENDPOINT'),
     ],
     'client' => [
-        'id' => env('NETBANK_CLIENT_ID'),
-        'secret' => env('NETBANK_CLIENT_SECRET')
+        'id' => env('NETBANK_CLIENT_ID', ''),
+        'secret' => env('NETBANK_CLIENT_SECRET', '')
     ],
     'source' => [
-        'account_number' => env('NETBANK_SOURCE_ACCOUNT_NUMBER'),
+        'account_number' => env('NETBANK_SOURCE_ACCOUNT_NUMBER',''),
         'sender' => [
-            'customer_id' => env('NETBANK_SENDER_CUSTOMER_ID'),
+            'customer_id' => env('NETBANK_SENDER_CUSTOMER_ID',''),
             'address' => [
                 "address1" => env('NETBANK_SENDER_ADDRESS_ADDRESS1'),
                 "city" => env('NETBANK_SENDER_ADDRESS_CITY'),

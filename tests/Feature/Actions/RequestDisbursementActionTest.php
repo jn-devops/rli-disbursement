@@ -2,15 +2,23 @@
 
 namespace Tests\Feature\Actions;
 
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use App\Actions\RequestDisbursementAction;
 use App\Data\GatewayResponseData;
+use Database\Seeders\UserSeeder;
 use App\Models\User;
 use Tests\TestCase;
 
 class RequestDisbursementActionTest extends TestCase
 {
+    use RefreshDatabase;
     use WithFaker;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(UserSeeder::class);
+    }
 
     /** @test */
     public function request_disbursement_action_requires_array_returns_boolean(): void

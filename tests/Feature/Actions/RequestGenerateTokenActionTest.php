@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Actions;
 
-use App\Actions\{GenerateTokenAction, RequestDepositAction, RequestDisbursementAction};
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
+use App\Actions\{GenerateTokenAction, RequestDepositAction};
 use Database\Seeders\UserSeeder;
 use App\Models\User;
 use Tests\TestCase;

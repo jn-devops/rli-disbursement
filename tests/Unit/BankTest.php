@@ -2,9 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Collections\SettlementRailCollection;
-use Spatie\LaravelData\DataCollection;
 use App\Data\{BankData, SettlementRailData};
+use Spatie\LaravelData\DataCollection;
 use Tests\TestCase;
 
 class BankTest extends TestCase

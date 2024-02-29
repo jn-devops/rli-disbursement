@@ -14,11 +14,9 @@ class MoneyTest extends TestCase
     {
         $money = Money::ofMinor(100, 'PHP');
         $this->assertEquals(1, $money->getAmount()->toInt());
-
         $money = Money::of(1, 'PHP');
         $this->assertEquals(1, $money->getAmount()->toInt());
         $this->assertEquals(100, $money->getMinorAmount()->toInt());
-
         $this->assertEquals(100, Money::of(1, 'PHP')->getMinorAmount()->toInt());
     }
 }

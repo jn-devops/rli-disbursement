@@ -21,12 +21,23 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+
+        <env name="NETBANK_DISBURSEMENT_ENDPOINT" value="https://api-uat.netbank.ph/v1/transactions"/>
+        <env name="NETBANK_TOKEN_ENDPOINT" value="https://auth.netbank.ph/oauth2/token"/>
+        <env name="NETBANK_CLIENT_ID" value="srHqBkNp57nzHyL1vC6N2o6Q"/>
+        <env name="NETBANK_CLIENT_SECRET" value="w7yrXSGdXtp8s6Rb4Iwg75SlA4zrqx2Hmc2SWs1pCk6fp91i"/>
+        <env name="NETBANK_SOURCE_ACCOUNT_NUMBER" value="387-000-00001-1"/>
+        <env name="NETBANK_SENDER_CUSTOMER_ID" value="103554"/>
+        <env name="NETBANK_SENDER_ADDRESS_ADDRESS1" value="Poblacion 2"/>
+        <env name="NETBANK_SENDER_ADDRESS_CITY" value="Currimao, Ilocos Norte"/>
+        <env name="NETBANK_SENDER_ADDRESS_COUNTRY" value="PH"/>
+        <env name="NETBANK_SENDER_ADDRESS_POSTAL_CODE" value="2903"/>
     </php>
 </phpunit>
