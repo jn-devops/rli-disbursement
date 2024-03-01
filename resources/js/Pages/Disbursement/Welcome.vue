@@ -1,20 +1,11 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 
 let PHPeso = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'PHP',
 });
-
-
-console.log(usePage().props.agent.id);
-
-Echo.channel(`App.Models.User.${ usePage().props.agent.id }`)
-    .listen('.disbursement.confirmed', (e) => {
-        router.reload();
-        console.log(e);
-    })
 </script>
 
 <template>
