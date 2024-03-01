@@ -3,7 +3,7 @@ import Welcome from '@/Pages/Disbursement/Welcome.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {router, usePage} from "@inertiajs/vue3";
 
-Echo.channel(`App.Models.User.${ usePage().props.agent.id }`)
+Echo.private(`App.Models.User.${ usePage().props.agent.id }`)
     .listen('.disbursement.confirmed', (e) => {
         router.reload();
         console.log(e);
