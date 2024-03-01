@@ -32,7 +32,7 @@ class DisbursementConfirmed implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('user.' . $this->transaction->payable->id),
+            new PrivateChannel('App.Models.User.' . $this->transaction->payable->id),
         ];
     }
 
@@ -43,9 +43,11 @@ class DisbursementConfirmed implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
+        $uuid = $this->transaction->uuid;
         $amount = Money::ofMinor($this->transaction->amount, $this->currency)->getAmount()->toInt();
 
         return [
+            'uuid' => $uuid,
             'amount' => $amount,
         ];
     }
