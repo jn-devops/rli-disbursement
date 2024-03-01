@@ -8,7 +8,9 @@ let PHPeso = new Intl.NumberFormat('en-US', {
     currency: 'PHP',
 });
 
-const user = computed( () => usePage().props.auth.user);
+const page = usePage()
+const user = computed(() => page.props.auth.user)
+
 console.log(user);
 console.log(user.id);
 Echo.channel(`App.Models.User.${user.id}`)
