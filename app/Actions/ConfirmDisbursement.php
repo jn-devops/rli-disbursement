@@ -6,6 +6,7 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use App\Events\DisbursementConfirmed;
 use Bavix\Wallet\Models\Transaction;
+use Illuminate\Support\Arr;
 
 class ConfirmDisbursement
 {
@@ -14,14 +15,15 @@ class ConfirmDisbursement
     public function rules(): array
     {
         return [
-            'uuid' => ['required', 'uuid'],
+            'operationId' => ['required', 'string'],
         ];
     }
 
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
         $validated = $request->validated();
-        $transaction = Transaction::where('uuid', $validated['uuid'])->first();
+        $meta = json_encode(Arr::only($validated, 'operationId'));
+        $transaction = Transaction::where('meta', $meta)->firstOrFail();
         $user = $transaction->payable;
         $user->confirm($transaction);
         DisbursementConfirmed::dispatch($transaction);

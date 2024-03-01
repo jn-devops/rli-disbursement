@@ -76,10 +76,11 @@ class RequestDisbursementActionTest extends TestCase
         $response->assertJsonFragment(['status' => 'Pending']);
         $this->assertEquals($initial_amount, $user->fresh()->balanceFloat);
 
-        $uuid = $response->json('uuid');
-        $transaction = Transaction::where('uuid', $uuid)->first();
+        $operationId = $response->json('transaction_id');
+        $meta = json_encode(compact('operationId'));
+        $transaction = Transaction::where('meta', $meta)->first();
         $this->assertFalse($transaction->confirmed);
-        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-payment'), ['uuid' => $uuid]);
+        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-payment'), ['operationId' => $operationId]);
         $response->assertStatus(200);
         $this->assertTrue($transaction->fresh()->confirmed);
         $this->assertEquals($initial_amount - $amount, $user->fresh()->balanceFloat);

@@ -61,9 +61,10 @@ class RequestDisbursementAction
                 ]
             );
         $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
-        $transaction = $user->withdraw($minor_amount, [], false);
+        $transaction = $user->withdraw($minor_amount, ['operationId' => $response->json('transaction_id')], false);
+        $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());
 
-        return $response->successful() ? GatewayResponseData::from(array_merge(['uuid' => $transaction->uuid], $response->json())) : false;
+        return $response->successful() ? GatewayResponseData::from($responseData) : false;
     }
 
     public function handle(User $user, array $validated): GatewayResponseData|bool
