@@ -22,7 +22,10 @@ class ConfirmDisbursement
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
         $validated = $request->validated();
-        $meta = json_encode(Arr::only($validated, 'operationId'));
+        $operationId = Arr::get($validated, 'operationId');
+        logger('$operationId = ' . $operationId);
+        $meta = json_encode(compact('operationId'));
+        logger('$meta = ' . $meta);
         $transaction = Transaction::where('meta', $meta)->firstOrFail();
         $user = $transaction->payable;
         $user->confirm($transaction);
