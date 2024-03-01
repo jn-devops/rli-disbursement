@@ -31,6 +31,8 @@ class DisbursementConfirmed implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
+        logger('DisbursementConfirmed::broadcastOn');
+        logger('$this->transaction->payable->id = ' . $this->transaction->payable->id);
         return [
             new PrivateChannel('App.Models.User.' . $this->transaction->payable->id),
         ];
