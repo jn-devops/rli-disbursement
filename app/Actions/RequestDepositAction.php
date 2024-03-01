@@ -24,6 +24,9 @@ class RequestDepositAction
         return $system->transferFloat($user, $amount);
     }
 
+    /**
+     * @return array[]
+     */
     public function rules(): array
     {
         return [
@@ -31,7 +34,12 @@ class RequestDepositAction
         ];
     }
 
-    public function asController(ActionRequest $request)
+    /**
+     * @param ActionRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Bavix\Wallet\Internal\Exceptions\ExceptionInterface
+     */
+    public function asController(ActionRequest $request): \Illuminate\Http\RedirectResponse
     {
         $user = $request->user();
         $amount = Arr::get($request->validated(), 'amount');

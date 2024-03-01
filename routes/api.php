@@ -22,3 +22,8 @@ Route::post('/disburse', \App\Actions\RequestDisbursementAction::class)
 //    ->middleware(['auth:sanctum', 'ability:disburse:account'])
     ->middleware(['auth:sanctum'])
     ->name('disbursement-payment');
+
+Route::post('/confirm', \App\Actions\ConfirmDisbursement::class)
+//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
+    ->middleware(['auth:sanctum'])
+    ->name('confirm-payment');

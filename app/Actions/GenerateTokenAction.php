@@ -10,6 +10,12 @@ class GenerateTokenAction
 {
     use AsAction;
 
+    /**
+     * @param User $user
+     * @param string $password
+     * @param string $device
+     * @return string|null
+     */
     public function handle(User $user, string $password, string $device = 'mobile'): ?string
     {
         if (Hash::check($password, $user->getAttribute('password'))) {

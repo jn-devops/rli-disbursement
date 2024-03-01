@@ -8,14 +8,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Notifications\Notifiable;
 use Bavix\Wallet\Interfaces\WalletFloat;
+use Bavix\Wallet\Interfaces\Confirmable;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Laravel\Jetstream\HasProfilePhoto;
 use Bavix\Wallet\Interfaces\Wallet;
+use Bavix\Wallet\Traits\CanConfirm;
 use Bavix\Wallet\Traits\HasWallet;
+
 
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements Wallet, WalletFloat
+class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
 {
     use TwoFactorAuthenticatable;
     use HasProfilePhoto;
@@ -23,6 +26,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
+    use CanConfirm;
     use HasWallet;
 
     /**

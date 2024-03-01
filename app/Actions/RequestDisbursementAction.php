@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Validator;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
 use App\Classes\{Address, Gateway};
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
 use ReflectionMethod;
-use Illuminate\Validation\Rule;
+use App\Models\User;
 
 /**
  * Class RequestDisbursementAction
@@ -28,22 +29,22 @@ class RequestDisbursementAction
     {
     }
 
-    public static function execute(...$arguments): mixed
-    {
-        $action = static::make();
-        $argName = $action->validated ?? 'validated';
-        foreach ((new ReflectionMethod(static::class, 'handle'))->getParameters() as $parameter) {
-            if (($parameter->name == $argName) and ($parameter->getType() == 'array')) {
-                $attribs = func_get_args()[$parameter->getPosition()];
+//    public static function execute(...$arguments): mixed
+//    {
+//        $action = static::make();
+//        $argName = $action->validated ?? 'validated';
+//        foreach ((new ReflectionMethod(static::class, 'handle'))->getParameters() as $parameter) {
+//            if (($parameter->name == $argName) and ($parameter->getType() == 'array')) {
+//                $attribs = func_get_args()[$parameter->getPosition()];
+//
+//                return $action->handle(Validator::validate($attribs, $action->rules()));
+//            }
+//        }
+//
+//        return $action->handle(...$arguments);
+//    }
 
-                return $action->handle(Validator::validate($attribs, $action->rules()));
-            }
-        }
-
-        return $action->handle(...$arguments);
-    }
-
-    protected function disburse(array $validated): GatewayResponseData|bool
+    protected function disburse(User $user, array $validated): GatewayResponseData|bool
     {
         $response = Http::withHeaders($this->gateway->getHeaders())
             ->asJson()
@@ -52,20 +53,22 @@ class RequestDisbursementAction
                 [
                     "reference_id" => Arr::get($validated, 'reference'),
                     "settlement_rail" => Arr::get($validated, 'via'),
-                    "amount" => $this->getMinorAmount($validated),
+                    "amount" => $amount = $this->getAmountArray($validated),
                     "source_account_number" => config('disbursement.source.account_number'),
                     "sender" => config('disbursement.source.sender'),
                     "destination_account" => $this->getDestinationAccount($validated),
                     "recipient" => $this->getRecipient($validated)
                 ]
             );
+        $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
+        $transaction = $user->withdraw($minor_amount, [], false);
 
-        return $response->successful() ? GatewayResponseData::from($response->json()) : false;
+        return $response->successful() ? GatewayResponseData::from(array_merge(['uuid' => $transaction->uuid], $response->json())) : false;
     }
 
-    public function handle(array $validated): GatewayResponseData|bool
+    public function handle(User $user, array $validated): GatewayResponseData|bool
     {
-        return $this->disburse($validated);
+        return $this->disburse($user, $validated);
     }
 
     /**
@@ -90,7 +93,8 @@ class RequestDisbursementAction
 
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
-        $response = $this->disburse($request->validated());
+        $user = $request->user();
+        $response = $this->disburse($user, $request->validated());
 
         return response($response->toJson(), 200);
     }
@@ -113,7 +117,7 @@ class RequestDisbursementAction
         )->toArray();
     }
 
-    protected function getMinorAmount(array $validated): array
+    protected function getAmountArray(array $validated): array
     {
         $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
 

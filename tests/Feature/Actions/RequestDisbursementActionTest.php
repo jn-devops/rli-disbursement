@@ -4,8 +4,10 @@ namespace Tests\Feature\Actions;
 
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use App\Actions\RequestDisbursementAction;
+use Bavix\Wallet\Models\Transaction;
 use App\Data\GatewayResponseData;
 use Database\Seeders\UserSeeder;
+use Brick\Money\Money;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -21,8 +23,10 @@ class RequestDisbursementActionTest extends TestCase
     }
 
     /** @test */
-    public function request_disbursement_action_requires_array_returns_boolean(): void
+    public function request_disbursement_action_requires_array_returns_transaction(): void
     {
+        $user = User::factory()->create();
+        $user->depositFloat($initial_amount = 1000);
         $reference = $this->faker->uuid();
         $bank_code = 'CUOBPHM2XXX';
         $bank_account_number = '039000000052';
@@ -36,10 +40,16 @@ class RequestDisbursementActionTest extends TestCase
             'via' => $via,
             'amount' => $amount
         ];
-        $response = $action->execute($attribs);
+        $response = $action->run($user, $attribs);
         $this->assertInstanceOf(GatewayResponseData::class, $response);
         $this->assertGreaterThan(1000000, $response->transaction_id);
         $this->assertEquals('Pending', $response->status);
+        $transaction = Transaction::where('uuid', $response->uuid)->first();
+        $this->assertFalse($transaction->confirmed);
+        $this->assertTrue($transaction->payable->is($user));
+        $major_amount = Money::ofMinor($transaction->amount * -1,'PHP')->getAmount()->toInt();
+        $this->assertEquals($amount, $major_amount);
+        $this->assertEquals($initial_amount, $user->balanceFloat);
     }
 
     /** @test */
@@ -59,9 +69,19 @@ class RequestDisbursementActionTest extends TestCase
             'amount' => $amount
         ];
         $user = User::factory()->create();
+        $user->depositFloat($initial_amount = 1000);
         $token = $user->createToken('pipe-dream')->plainTextToken;
         $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), $attribs);
         $response->assertStatus(200);
         $response->assertJsonFragment(['status' => 'Pending']);
+        $this->assertEquals($initial_amount, $user->fresh()->balanceFloat);
+
+        $uuid = $response->json('uuid');
+        $transaction = Transaction::where('uuid', $uuid)->first();
+        $this->assertFalse($transaction->confirmed);
+        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-payment'), ['uuid' => $uuid]);
+        $response->assertStatus(200);
+        $this->assertTrue($transaction->fresh()->confirmed);
+        $this->assertEquals($initial_amount - $amount, $user->fresh()->balanceFloat);
     }
 }
