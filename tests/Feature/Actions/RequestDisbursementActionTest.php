@@ -44,7 +44,9 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertInstanceOf(GatewayResponseData::class, $response);
         $this->assertGreaterThan(1000000, $response->transaction_id);
         $this->assertEquals('Pending', $response->status);
-        $transaction = Transaction::where('uuid', $response->uuid)->first();
+
+        $transaction = Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first();
+//        $transaction = Transaction::where('uuid', $response->uuid)->first();
         $this->assertFalse($transaction->confirmed);
         $this->assertTrue($transaction->payable->is($user));
         $major_amount = Money::ofMinor($transaction->amount * -1,'PHP')->getAmount()->toInt();

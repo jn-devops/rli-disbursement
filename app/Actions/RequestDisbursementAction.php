@@ -46,19 +46,20 @@ class RequestDisbursementAction
 
     protected function disburse(User $user, array $validated): GatewayResponseData|bool
     {
+        $payload =     [
+            "reference_id" => Arr::get($validated, 'reference'),
+            "settlement_rail" => Arr::get($validated, 'via'),
+            "amount" => $amount = $this->getAmountArray($validated),
+            "source_account_number" => config('disbursement.source.account_number'),
+            "sender" => config('disbursement.source.sender'),
+            "destination_account" => $this->getDestinationAccount($validated),
+            "recipient" => $this->getRecipient($validated)
+        ];
+        logger($payload);
         $response = Http::withHeaders($this->gateway->getHeaders())
             ->asJson()
             ->post(
-                $this->gateway->getEndPoint(),
-                [
-                    "reference_id" => Arr::get($validated, 'reference'),
-                    "settlement_rail" => Arr::get($validated, 'via'),
-                    "amount" => $amount = $this->getAmountArray($validated),
-                    "source_account_number" => config('disbursement.source.account_number'),
-                    "sender" => config('disbursement.source.sender'),
-                    "destination_account" => $this->getDestinationAccount($validated),
-                    "recipient" => $this->getRecipient($validated)
-                ]
+                $this->gateway->getEndPoint(), $payload
             );
         $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
         $transaction = $user->withdraw($minor_amount, ['operationId' => $response->json('transaction_id')], false);
