@@ -27,6 +27,7 @@ class ConfirmDisbursement
         $meta = json_encode(compact('operationId'));
         logger('$meta = ' . $meta);
         $transaction = Transaction::where('meta', $meta)->firstOrFail();
+        logger('uuid = '. $transaction->uuid);
         $user = $transaction->payable;
         $user->confirm($transaction);
         DisbursementConfirmed::dispatch($transaction);
