@@ -5,7 +5,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'PHP',
 });
-Echo.channel(`user.${usePage().props.auth.user.id}`)
+Echo.channel(`App.Models.User.${usePage().props.auth.user.id}`)
     .listen('.disbursement.confirmed', (e) => {
         router.reload();
         console.log(e);
