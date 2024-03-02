@@ -23,7 +23,11 @@ Route::post('/disburse', \App\Actions\RequestDisbursementAction::class)
     ->middleware(['auth:sanctum'])
     ->name('disbursement-payment');
 
-Route::post('/confirm', \App\Actions\ConfirmDisbursement::class)
+Route::post('/confirm-disbursement', \App\Actions\ConfirmDisbursement::class)
 //    ->middleware(['auth:sanctum', 'ability:disburse:account'])
     ->middleware(['auth:sanctum'])
-    ->name('confirm-payment');
+    ->name('confirm-disbursement');
+
+Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
+//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
+    ->name('confirm-deposit');

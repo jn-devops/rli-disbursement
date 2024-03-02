@@ -23,8 +23,8 @@ const closeModal = () => {
 }
 
 const topup = () => {
-    form.post(route('topup'), {
-        errorBag: 'topup',
+    form.post(route('topup-wallet'), {
+        errorBag: 'topup-wallet',
         preserveScroll: true,
         onSuccess: () => form.reset()
     });

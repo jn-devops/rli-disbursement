@@ -28,6 +28,7 @@ return [
         'system' => [
             'name' => env('SYSTEM_NAME', 'RLI DevOps'),
             'email' => env('SYSTEM_EMAIL', 'devops@joy-nostalg.com'),
+            'mobile' => env('SYSTEM_MOBILE', '09178251991'),
             'password' => env('SYSTEM_PASSWORD', '#Password1'),
             'password_confirmation' => env('SYSTEM_PASSWORD', '#Password1'),
         ],

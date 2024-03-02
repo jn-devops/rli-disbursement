@@ -3,7 +3,7 @@
 namespace Tests\Feature\Actions;
 
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
-use App\Actions\{GenerateTokenAction, RequestDepositAction};
+use App\Actions\{GenerateTokenAction, TopupWalletAction};
 use Database\Seeders\UserSeeder;
 use App\Models\User;
 use Tests\TestCase;
@@ -26,7 +26,7 @@ class RequestGenerateTokenActionTest extends TestCase
     public function generate_token_action_works(): void
     {
         $user = User::factory()->create(['password' => bcrypt($password = $this->faker->word())]);
-        RequestDepositAction::run($user, $amount = $this->faker->numberBetween(1,2));
+        TopupWalletAction::run($user, $amount = $this->faker->numberBetween(1,2));
         $this->assertEquals($amount, $user->balanceFloat);
         $token = GenerateTokenAction::run($user, $password, $device = 'tech');
         $reference = $this->faker->uuid();

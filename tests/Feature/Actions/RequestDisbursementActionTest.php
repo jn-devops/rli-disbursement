@@ -82,7 +82,7 @@ class RequestDisbursementActionTest extends TestCase
         $meta = json_encode(compact('operationId'));
         $transaction = Transaction::where('meta', $meta)->first();
         $this->assertFalse($transaction->confirmed);
-        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-payment'), ['operationId' => $operationId]);
+        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-disbursement'), ['operationId' => $operationId]);
         $response->assertStatus(200);
         $this->assertTrue($transaction->fresh()->confirmed);
         $this->assertEquals($initial_amount - $amount, $user->fresh()->balanceFloat);

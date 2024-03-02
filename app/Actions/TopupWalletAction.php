@@ -7,7 +7,7 @@ use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Arr;
 use App\Models\User;
 
-class RequestDepositAction
+class TopupWalletAction
 {
     use AsAction;
 

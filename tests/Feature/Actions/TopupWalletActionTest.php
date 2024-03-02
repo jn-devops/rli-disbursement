@@ -3,13 +3,13 @@
 namespace Tests\Feature\Actions;
 
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
-use App\Actions\RequestDepositAction;
+use App\Actions\TopupWalletAction;
 use Bavix\Wallet\Models\Transfer;
 use Database\Seeders\UserSeeder;
 use App\Models\User;
 use Tests\TestCase;
 
-class RequestDepositActionTest extends TestCase
+class TopupWalletActionTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -24,11 +24,11 @@ class RequestDepositActionTest extends TestCase
     }
 
     /** @test */
-    public function request_deposit_action_works(): void
+    public function test_topup_wallet_action_works(): void
     {
         $user = User::factory()->create();
         $amountFloat = 1000;
-        $transaction = RequestDepositAction::run($user, $amountFloat);
+        $transaction = TopupWalletAction::run($user, $amountFloat);
         $this->assertInstanceOf(Transfer::class, $transaction);
         $this->assertEquals(1000, $user->balanceFloat);
         $this->assertEquals((1000 * 1000 * 1000) - 1000, $this->system->balanceFloat);

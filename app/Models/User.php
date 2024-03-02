@@ -18,6 +18,16 @@ use Bavix\Wallet\Traits\HasWallet;
 
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * Class User
+ *
+ * @property int    $id
+ * @property string $name
+ * @property string $email
+ * @property string $mobile
+ *
+ * @method   int    getKey()
+ */
 class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
 {
     use TwoFactorAuthenticatable;
@@ -37,6 +47,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
     protected $fillable = [
         'name',
         'email',
+        'mobile',
         'password',
     ];
 

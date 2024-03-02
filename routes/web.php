@@ -34,5 +34,5 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::post('/topup', \App\Actions\RequestDepositAction::class)
-    ->name('topup');
+Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)
+    ->name('topup-wallet');
