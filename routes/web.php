@@ -36,3 +36,9 @@ Route::middleware([
 
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)
     ->name('topup-wallet');
+
+Route::get('/send', [\App\Http\Controllers\SendController::class, 'portal'])
+    ->name('send-portal');
+
+Route::post('/disburse-one',  [\App\Http\Controllers\SendController::class, 'disburseOne'])
+    ->name('disburse-one');
