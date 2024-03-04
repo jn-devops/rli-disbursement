@@ -25,8 +25,13 @@ class SendController extends Controller
         $user = $request->user();
         $response = RequestDisbursementAction::run($user, $validated);
 
-        return back()->with([
-            'data' => $response->toArray()
+        $bank_name = $validated['bank'];
+        $via = $validated['via'];
+        $amount = $validated['amount'];
+
+        return back()->with('event', [
+            'name' => 'amount.disbursed',
+            'data' => compact('bank_name', 'via', 'amount'),
         ]);
     }
 }

@@ -34,6 +34,23 @@ let PHPeso = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'PHP',
 });
+
+const amountAdded = ref(0);
+const bankSentTo = ref(null);
+
+watch (
+    () => usePage().props.flash.event,
+    (event) => {
+        switch (event?.name) {
+            case 'amount.disbursed':
+                console.log(event?.data);
+                amountAdded.value = event?.data.amount;
+                bankSentTo.value =  event?.data.bank_name;
+                break;
+        }
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
@@ -103,7 +120,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
         </template>
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                {{  PHPeso.format(form.amount) }} sent to {{ form.account_number }}.
+                {{  PHPeso.format(amountAdded) }} sent to {{ bankSentTo }}.
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

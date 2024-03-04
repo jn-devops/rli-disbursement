@@ -1,9 +1,14 @@
 <script setup>
-import UpdateWalletForm from '@/Pages/Wallet/Partials/UpdateWalletForm.vue';
-import SectionBorder from '@/Components/SectionBorder.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
 import DisbursementToOneForm from "@/Pages/Send/Partials/DisbursementToOneForm.vue";
-import {usePage} from "@inertiajs/vue3";
+import SectionBorder from '@/Components/SectionBorder.vue';
+import { router, usePage } from "@inertiajs/vue3";
+import AppLayout from '@/Layouts/AppLayout.vue';
+
+Echo.private(`App.Models.User.${ usePage().props.agent.id }`)
+    .listen('.disbursement.confirmed', (e) => {
+        router.reload();
+        console.log(e);
+    })
 </script>
 
 <template>
