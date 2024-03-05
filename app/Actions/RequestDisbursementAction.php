@@ -7,7 +7,7 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\Validator;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
-use App\Classes\{Address, Gateway};
+use App\Classes\{Address, Gateway, ServiceFee};
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
@@ -61,7 +61,9 @@ class RequestDisbursementAction
             ->post(
                 $this->gateway->getEndPoint(), $payload
             );
-        $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
+        $credits = Money::of(Arr::get($validated, 'amount'), 'PHP');
+        $serviceFee = (new ServiceFee($user))->compute($credits);
+        $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
         $transaction = $user->withdraw($minor_amount, ['operationId' => $response->json('transaction_id')], false);
         $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());
 

@@ -28,7 +28,7 @@ class RequestGenerateTokenActionTest extends TestCase
         $user = User::factory()->create(['password' => bcrypt($password = $this->faker->word())]);
         TopupWalletAction::run($user, $amount = $this->faker->numberBetween(1,2));
         $this->assertEquals($amount, $user->balanceFloat);
-        $token = GenerateTokenAction::run($user, $password, $device = 'tech');
+        $token = GenerateTokenAction::run($user, $password, $device = 'tech1');
         $reference = $this->faker->uuid();
         $bank_code = 'CUOBPHM2XXX';
         $bank_account_number = '039000000052';

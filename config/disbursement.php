@@ -32,6 +32,8 @@ return [
             'password' => env('SYSTEM_PASSWORD', '#Password1'),
             'password_confirmation' => env('SYSTEM_PASSWORD', '#Password1'),
         ],
+        'transaction_fee' => 15 * 100,
+        'merchant_discount_rate' => 1.5/100
     ],
     'wallet' => [
         'initial_deposit' => env('INITIAL_DEPOSIT', 1000 * 1000 * 1000),

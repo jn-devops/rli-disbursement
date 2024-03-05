@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d1955966620231a131ee6b7103dcee8",
+    "content-hash": "1215670ccb60b43237ba8a8b36ae2855",
     "packages": [
         {
             "name": "amphp/amp",
@@ -8708,6 +8708,57 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "whitecube/php-prices",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/whitecube/php-prices.git",
+                "reference": "a42831807d1a68500b964cdf8211615922a58f1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/whitecube/php-prices/zipball/a42831807d1a68500b964cdf8211615922a58f1b",
+                "reference": "a42831807d1a68500b964cdf8211615922a58f1b",
+                "shasum": ""
+            },
+            "require": {
+                "brick/money": "0.8.*",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tests\\": "tests/",
+                    "Whitecube\\Price\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Toon Van den Bos",
+                    "email": "toon@whitecube.be"
+                }
+            ],
+            "description": "A simple PHP library for complex monetary prices management",
+            "support": {
+                "issues": "https://github.com/whitecube/php-prices/issues",
+                "source": "https://github.com/whitecube/php-prices/tree/v3.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/whitecube",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-03-06T10:41:54+00:00"
         }
     ],
     "packages-dev": [

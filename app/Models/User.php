@@ -25,6 +25,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $name
  * @property string $email
  * @property string $mobile
+ * @property float  $transaction_fee
+ * @property float  $merchant_discount_rate
  *
  * @method   int    getKey()
  */
@@ -49,6 +51,8 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
         'email',
         'mobile',
         'password',
+        'transaction_fee',
+        'merchant_discount_rate'
     ];
 
     /**
