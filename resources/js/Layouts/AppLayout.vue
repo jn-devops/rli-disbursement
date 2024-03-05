@@ -53,8 +53,8 @@ const logout = () => {
                                 </NavLink>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('send-portal')" :active="route().current('send-portal')">
-                                    Send
+                                <NavLink :href="route('outgoing')" :active="route().current('outgoing')">
+                                    Outgoing
                                 </NavLink>
                             </div>
                         </div>

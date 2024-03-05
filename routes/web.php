@@ -32,13 +32,17 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+    Route::get('/outgoing', [\App\Http\Controllers\SendController::class, 'outgoing'])
+        ->name('outgoing');
+
+    Route::post('/disburse',  [\App\Http\Controllers\SendController::class, 'disburse'])
+        ->name('disburse');
+
+    Route::post('/transfer',  [\App\Http\Controllers\SendController::class, 'transfer'])
+        ->name('transfer');
 });
 
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)
     ->name('topup-wallet');
 
-Route::get('/send', [\App\Http\Controllers\SendController::class, 'portal'])
-    ->name('send-portal');
 
-Route::post('/disburse-one',  [\App\Http\Controllers\SendController::class, 'disburseOne'])
-    ->name('disburse-one');

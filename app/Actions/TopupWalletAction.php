@@ -11,6 +11,14 @@ class TopupWalletAction
 {
     use AsAction;
 
+    protected User $source;
+
+    public function __construct()
+    {
+        $this->setSource(User::getSystem());
+//        $this->source = User::getSystem();
+    }
+
     /**
      * @param User $user
      * @param float $amount
@@ -19,9 +27,7 @@ class TopupWalletAction
      */
     public function handle(User $user, float $amount): \Bavix\Wallet\Models\Transfer
     {
-        $system = User::getSystem();
-
-        return $system->transferFloat($user, $amount);
+        return $this->source->transferFloat($user, $amount);
     }
 
     /**
@@ -46,8 +52,15 @@ class TopupWalletAction
         $transfer = $this->handle($user, $amount);
 
         return back()->with('event', [
-            'name' => 'amount.deposited',
+            'name' => 'amount.deposited',//TODO: change to amount.credited
             'data' => $transfer->toArray(),
         ]);
+    }
+
+    public function setSource(User $source): static
+    {
+        $this->source = $source;
+
+        return $this;
     }
 }

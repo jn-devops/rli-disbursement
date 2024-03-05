@@ -23,8 +23,8 @@ const form = useForm({
 });
 
 const send = () => {
-    form.post(route('disburse-one'), {
-        errorBag: 'disburse-one',
+    form.post(route('disburse'), {
+        errorBag: 'disburse',
         preserveScroll: true,
         onSuccess: () => form.reset()
     });
@@ -56,10 +56,10 @@ watch (
 <template>
     <FormSection @submitted="send">
         <template #title>
-            Send To One
+            Disburse Credits To Account
         </template>
         <template #description>
-            Send to a bank account. Your balance is {{ PHPeso.format(agent.balanceFloat) }}.
+            <div>Wallet to Bank Account Transfer</div>
         </template>
         <template #form>
             <div class="col-span-6 sm:col-span-4">
