@@ -31,3 +31,6 @@ Route::post('/confirm-disbursement', \App\Actions\ConfirmDisbursement::class)
 Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
 //    ->middleware(['auth:sanctum', 'ability:disburse:account'])
     ->name('confirm-deposit');
+
+Route::get('/banks', \App\Actions\GetBankData::class)
+    ->name('banks');
