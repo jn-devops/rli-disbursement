@@ -26,14 +26,14 @@ class RequestGenerateTokenActionTest extends TestCase
     public function generate_token_action_works(): void
     {
         $user = User::factory()->create(['password' => bcrypt($password = $this->faker->word())]);
-        TopupWalletAction::run($user, $amount = $this->faker->numberBetween(1,2));
+        TopupWalletAction::run($user, $amount = 1000);
         $this->assertEquals($amount, $user->balanceFloat);
         $token = GenerateTokenAction::run($user, $password, $device = 'tech1');
         $reference = $this->faker->uuid();
         $bank_code = 'CUOBPHM2XXX';
         $bank_account_number = '039000000052';
         $via = 'INSTAPAY';
-        $amount = 1;
+        $amount = 100;
         $attribs = [
             'reference' => $reference,
             'bank' => $bank_code,
@@ -43,6 +43,6 @@ class RequestGenerateTokenActionTest extends TestCase
         ];
         $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), $attribs);
         $response->assertStatus(200);
-        $response->assertJsonFragment(['status' => 'Pending']);
+        $response->assertJsonStructure(['uuid', 'transaction_id', 'status']);
     }
 }

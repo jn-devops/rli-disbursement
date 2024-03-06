@@ -15,8 +15,6 @@ class DisbursementConfirmed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected string $currency = 'PHP';
-
     public Transaction $transaction;
 
     public function __construct(Transaction $transaction)
@@ -46,7 +44,7 @@ class DisbursementConfirmed implements ShouldBroadcast
     public function broadcastWith(): array
     {
         $uuid = $this->transaction->uuid;
-        $amount = Money::ofMinor($this->transaction->amount, $this->currency)->getAmount()->toInt();
+        $amount = Money::ofMinor($this->transaction->amount, 'PHP')->getAmount()->toFloat();
 
         return [
             'uuid' => $uuid,

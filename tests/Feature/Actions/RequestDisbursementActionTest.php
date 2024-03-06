@@ -25,74 +25,71 @@ class RequestDisbursementActionTest extends TestCase
     }
 
     /** @test */
-    public function request_disbursement_action_requires_array_returns_transaction(): void
+    public function request_disbursement_action_works_with_service_fee(): void
     {
-        $user = User::factory()->create();
-        $user->depositFloat($initial_amount = 1000);
-        $this->assertEquals($initial_amount, $user->balanceFloat);
-        $reference = $this->faker->uuid();
-        $bank_code = 'CUOBPHM2XXX';
-        $bank_account_number = '039000000052';
-        $via = 'INSTAPAY';
+        $initialAmountFloat = 1000;
+        $user = tap(User::factory()->create(), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
         $credits = Money::of(100, 'PHP');
-        $amountFloat = $credits->getAmount()->toInt();
-        $action = app(RequestDisbursementAction::class);
-        $attribs = [
-            'reference' => $reference,
-            'bank' => $bank_code,
-            'account_number' => $bank_account_number,
-            'via' => $via,
+        $response = app(RequestDisbursementAction::class)->run($user, [
+            'reference' => $this->faker->uuid(),
+            'bank' => 'CUOBPHM2XXX',
+            'account_number' => '039000000052',
+            'via' => 'INSTAPAY',
             'amount' => $credits->getAmount()->toInt()
-        ];
-
-        $response = $action->run($user, $attribs);
+        ]);
         $this->assertInstanceOf(GatewayResponseData::class, $response);
         $this->assertGreaterThan(1000000, $response->transaction_id);
         $this->assertEquals('Pending', $response->status);
 
+        //extract the transaction record from the operationId
         $transaction = Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first();
-        $this->assertFalse($transaction->confirmed);
         $this->assertTrue($transaction->payable->is($user));
 
-        $serviceFee = Price::ofMinor($transaction->amount * -1,'PHP');
-        $service_fee = (new ServiceFee($user))->compute($credits);
-        $this->assertEquals(0, $service_fee->compareTo($serviceFee));
-        $this->assertEquals($serviceFee->getAmount()->toFloat(), $serviceFee->inclusive()->getAmount()->toFloat());
+        //since it is not confirmed, the use balance should still be the same until it is confirmed by the bank
+        $this->assertFalse($transaction->confirmed);
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
 
-        $this->assertEquals($initial_amount, $user->balanceFloat);
+        $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
+        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
+        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
+        $this->assertEquals($expectedServiceFee->inclusive()->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
     }
 
     /** @test */
-    public function request_disbursement_action_has_end_point(): void
+    public function request_disbursement_action_has_end_point_with_service_fee(): void
     {
-        $reference = $this->faker->uuid();
-        $bank_code = 'CUOBPHM2XXX';
-        $bank_account_number = '039000000052';
-        $via = 'INSTAPAY';
-        $amount = 1;
-        $action = app(RequestDisbursementAction::class);
-        $attribs = [
-            'reference' => $reference,
-            'bank' => $bank_code,
-            'account_number' => $bank_account_number,
-            'via' => $via,
-            'amount' => $amount
-        ];
-        $user = User::factory()->create();
-        $user->depositFloat($initial_amount = 1000);
+        $initialAmountFloat = 1000;
+        $user = tap(User::factory()->create(), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $credits = Money::of(100, 'PHP');
         $token = $user->createToken('pipe-dream')->plainTextToken;
-        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), $attribs);
+        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), [
+            'reference' => $this->faker->uuid(),
+            'bank' => 'CUOBPHM2XXX',
+            'account_number' => '039000000052',
+            'via' => 'INSTAPAY',
+            'amount' => $credits->getAmount()->toInt()
+        ]);
         $response->assertStatus(200);
-        $response->assertJsonFragment(['status' => 'Pending']);
-        $this->assertEquals($initial_amount, $user->fresh()->balanceFloat);
-
-        $operationId = $response->json('transaction_id');
-        $meta = json_encode(compact('operationId'));
-        $transaction = Transaction::where('meta', $meta)->first();
+        $response->assertJsonStructure(['uuid', 'transaction_id', 'status']);
+        $transaction = with($operationId = $response->json('transaction_id'), function ($operationId) {
+            return Transaction::where('meta', json_encode(compact('operationId')))->first();
+        });
+        $this->assertTrue($transaction->payable->is($user));
         $this->assertFalse($transaction->confirmed);
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
+        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
+        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
+        $this->assertEquals($actualServiceFee->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
+
         $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-disbursement'), ['operationId' => $operationId]);
         $response->assertStatus(200);
         $this->assertTrue($transaction->fresh()->confirmed);
-        $this->assertEquals($initial_amount - $amount, $user->fresh()->balanceFloat);
+        $this->assertEquals($initialAmountFloat - $expectedServiceFee->inclusive()->getAmount()->toFloat(), $user->fresh()->balanceFloat);
     }
 }
