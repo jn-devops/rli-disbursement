@@ -3,7 +3,7 @@ import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOther
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
-import UpdateWalletForm from '@/Pages/Wallet/Partials/UpdateWalletForm.vue';
+import UpdateServiceFeesForm from '@/Pages/Profile/Partials/UpdateServiceFeesForm.vue';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -28,7 +28,7 @@ defineProps({
                     <UpdateProfileInformationForm :user="$page.props.auth.user" />
 
                     <SectionBorder />
-                    <UpdateWalletForm :user="$page.props.auth.user"/>
+                    <UpdateServiceFeesForm :user="$page.props.auth.user"/>
                     <SectionBorder />
                 </div>
 

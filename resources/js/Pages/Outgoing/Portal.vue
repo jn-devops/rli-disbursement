@@ -23,8 +23,8 @@ let PHPeso = new Intl.NumberFormat('en-US', {
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Outgoing
             </h2>
-            <h3>
-                <span>Wallet Balance ({{ $page.props.agent.mobile }})</span>:  <span></span><span>{{ PHPeso.format($page.props.agent.balanceFloat) }}</span>
+            <h3 class="dark:text-white white:text-black">
+                <span>Wallet Balance ({{ $page.props.agent.mobile }})</span>:  &nbsp;&nbsp;<span></span><span>{{ PHPeso.format($page.props.agent.balanceFloat) }}</span>
             </h3>
         </template>
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use FrittenKeeZ\Vouchers\Facades\Vouchers;
 use App\Actions\RequestDisbursementAction;
+use FrittenKeeZ\Vouchers\Models\Voucher;
 use Illuminate\Support\Facades\Validator;
 use App\Actions\TopupWalletAction;
 use Illuminate\Http\Request;
@@ -61,5 +63,41 @@ class SendController extends Controller
                 'accountNumberSentTo' => $mobile
             ],
         ]);
+    }
+
+    public function updateFees(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => ['required', 'string', 'exists:vouchers'],
+        ]);
+
+        $validated = $validator->validate();
+        $code = Arr::get($validated, 'code');
+        $voucher = Voucher::where('code', $code)->first();
+
+        $validator->after(function ($validator) use ($voucher) {
+            if ($voucher->isRedeemed()) {
+                $validator->errors()->add('code', 'Voucher has already been redeemed.');
+            }
+            elseif ($voucher->isExpired()) {
+                $validator->errors()->add('code', 'Voucher has expired.');
+            }
+        });
+
+        if ($validator->passes()) {
+            tap($request->user(), function ($user) use ($voucher) {
+                $user->update($voucher->metadata);
+                $user->save();
+                Vouchers::redeem($voucher->code, $user);
+            });
+
+            return back()->with('event', [
+                'name' => 'fees.updated',
+                'data' => $voucher->metadata,
+            ]);
+        }
+        else {
+            $validator->validate();
+        }
     }
 }

@@ -40,6 +40,9 @@ Route::middleware([
 
     Route::post('/transfer',  [\App\Http\Controllers\SendController::class, 'transfer'])
         ->name('transfer');
+
+    Route::post('/update-fees',  [\App\Http\Controllers\SendController::class, 'updateFees'])
+        ->name('update-fees');
 });
 
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)

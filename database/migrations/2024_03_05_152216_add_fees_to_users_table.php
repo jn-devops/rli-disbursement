@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->integer('transaction_fee')->nullable();
-            $table->float('merchant_discount_rate')->nullable();
+            $table->float('merchant_discount_rate', 4, 4)->nullable();
         });
     }
 
