@@ -88,9 +88,4 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
     {
         return User::where('email', config('disbursement.user.system.email'))->firstOrFail();
     }
-
-    public function transactions(): MorphMany
-    {
-        return $this->morphMany(Transaction::class, 'payable');
-    }
 }
