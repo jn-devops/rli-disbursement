@@ -9,6 +9,9 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\MorphMany;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\MorphOne;
 
 class User extends Resource
 {
@@ -25,6 +28,13 @@ class User extends Resource
      * @var string
      */
     public static $title = 'name';
+
+    /**
+     * The visual style used for the table. Available options are 'tight' and 'default'.
+     *
+     * @var string
+     */
+    public static $tableStyle = 'tight';
 
     /**
      * The columns that should be searched.
@@ -62,6 +72,10 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())
                 ->updateRules('nullable', Rules\Password::defaults()),
+
+            MorphOne::make('Wallet'),
+            MorphMany::make('Transactions'),
+            HasMany::make('Transfers'),
         ];
     }
 

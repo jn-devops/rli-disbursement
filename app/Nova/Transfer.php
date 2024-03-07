@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\{BelongsTo, Boolean, Currency, DateTime, ID, MorphTo, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Illuminate\Http\Request;
 use Brick\Money\Money;
 
 class Transfer extends Resource
@@ -21,6 +22,20 @@ class Transfer extends Resource
      * @var string
      */
     public static $title = 'id';
+
+    /**
+     * The visual style used for the table. Available options are 'tight' and 'default'.
+     *
+     * @var string
+     */
+    public static $tableStyle = 'tight';
+
+    /**
+     * Indicates if the resource should be displayed in the sidebar.
+     *
+     * @var bool
+     */
+    public static $displayInNavigation = false;
 
     /**
      * The columns that should be searched.
@@ -50,8 +65,10 @@ class Transfer extends Resource
                 ->displayUsing(fn () => "{$this->to->holder->name} {$this->to->name}"),
             BelongsTo::make('Deposit', 'deposit', Transaction::class)
                 ->displayUsing(fn () => Money::ofMinor($this->deposit->amount, 'PHP')->formatTo('en_US')),
-            Currency::make('Discount')->asMinorUnits()->currency('PHP')->sortable(),
-            Currency::make('Fee')->asMinorUnits()->currency('PHP')->sortable(),
+            Currency::make('Discount')->asMinorUnits()->currency('PHP')->sortable()->hideFromIndex(),
+            Currency::make('Fee')->asMinorUnits()->currency('PHP')->sortable()->hideFromIndex(),
+            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable(),
+            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }
 
@@ -97,5 +114,20 @@ class Transfer extends Resource
     public function actions(NovaRequest $request)
     {
         return [];
+    }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToDelete(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToUpdate(Request $request)
+    {
+        return false;
     }
 }

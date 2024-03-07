@@ -5,6 +5,7 @@ namespace App\Nova;
 use Laravel\Nova\Fields\{Boolean, Currency, DateTime, ID, MorphTo, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
+use Illuminate\Http\Request;
 
 class Wallet extends Resource
 {
@@ -21,6 +22,20 @@ class Wallet extends Resource
      * @var string
      */
     public static $title = 'id';
+
+    /**
+     * The visual style used for the table. Available options are 'tight' and 'default'.
+     *
+     * @var string
+     */
+    public static $tableStyle = 'tight';
+
+    /**
+     * Indicates if the resource should be displayed in the sidebar.
+     *
+     * @var bool
+     */
+    public static $displayInNavigation = false;
 
     /**
      * The columns that should be searched.
@@ -93,5 +108,20 @@ class Wallet extends Resource
         return [
             ExportAsCsv::make()->nameable(),
         ];
+    }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToDelete(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToUpdate(Request $request)
+    {
+        return false;
     }
 }

@@ -6,6 +6,7 @@ use Laravel\Nova\Fields\{Boolean, Currency, DateTime, ID, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\MorphTo;
+use Illuminate\Http\Request;
 
 class Transaction extends Resource
 {
@@ -38,6 +39,13 @@ class Transaction extends Resource
      * @var string
      */
     public static $tableStyle = 'tight';
+
+    /**
+     * Indicates if the resource should be displayed in the sidebar.
+     *
+     * @var bool
+     */
+    public static $displayInNavigation = false;
 
     /**
      * Get the fields displayed by the resource.
@@ -103,5 +111,20 @@ class Transaction extends Resource
         return [
             ExportAsCsv::make()->nameable(),
         ];
+    }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToDelete(Request $request)
+    {
+        return false;
+    }
+
+    public function authorizedToUpdate(Request $request)
+    {
+        return false;
     }
 }

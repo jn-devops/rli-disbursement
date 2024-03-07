@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Bavix\Wallet\Traits\{CanConfirm, HasWallet};
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Notifications\Notifiable;
 use Bavix\Wallet\Interfaces\WalletFloat;
@@ -12,10 +14,7 @@ use Bavix\Wallet\Interfaces\Confirmable;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Laravel\Jetstream\HasProfilePhoto;
 use Bavix\Wallet\Interfaces\Wallet;
-use Bavix\Wallet\Traits\CanConfirm;
-use Bavix\Wallet\Traits\HasWallet;
-
-
+use Bavix\Wallet\Models\Transaction;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -88,5 +87,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
     static public function getSystem(): static
     {
         return User::where('email', config('disbursement.user.system.email'))->firstOrFail();
+    }
+
+    public function transactions(): MorphMany
+    {
+        return $this->morphMany(Transaction::class, 'payable');
     }
 }
