@@ -38,4 +38,7 @@ return [
     'wallet' => [
         'initial_deposit' => env('INITIAL_DEPOSIT', 1000 * 1000 * 1000),
     ],
+    'nova' => [
+        'whitelist' => env('NOVA_WHITELIST', '*')
+    ],
 ];

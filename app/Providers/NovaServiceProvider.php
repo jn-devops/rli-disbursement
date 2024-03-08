@@ -55,6 +55,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate()
     {
         Gate::define('viewNova', function ($user) {
+            return true;
+//            $whitelist = config('disbursement.nova.whitelist');
+//            if ($whitelist === '*') return true;
+
+
             return in_array($user->email, [
                 config('disbursement.user.system.email')
             ]);
