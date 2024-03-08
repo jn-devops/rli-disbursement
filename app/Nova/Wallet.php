@@ -59,7 +59,7 @@ class Wallet extends Resource
             MorphTo::make('Holder'),
             Text::make('Name')->sortable(),
             Currency::make('Balance')->asMinorUnits()->currency('PHP')->sortable(),
-            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable(),
+            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->showOnDetail(),
             DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }

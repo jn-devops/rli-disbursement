@@ -56,18 +56,18 @@ class Transfer extends Resource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('From', 'from', Wallet::class)
-                ->displayUsing(fn () => "{$this->from->holder->name} {$this->from->name}"),
             BelongsTo::make('Withdraw', 'withdraw', Transaction::class)
                 ->displayUsing(fn () => Money::ofMinor($this->withdraw->amount, 'PHP')->formatTo('en_US')),
-            Text::make('Status')->sortable(),
-            BelongsTo::make('To', 'to', Wallet::class)
-                ->displayUsing(fn () => "{$this->to->holder->name} {$this->to->name}"),
+            BelongsTo::make('From', 'from', Wallet::class)
+                ->displayUsing(fn () => "{$this->from->holder->name} {$this->from->name}"),
             BelongsTo::make('Deposit', 'deposit', Transaction::class)
                 ->displayUsing(fn () => Money::ofMinor($this->deposit->amount, 'PHP')->formatTo('en_US')),
+            BelongsTo::make('To', 'to', Wallet::class)
+                ->displayUsing(fn () => "{$this->to->holder->name} {$this->to->name}"),
             Currency::make('Discount')->asMinorUnits()->currency('PHP')->sortable()->hideFromIndex(),
             Currency::make('Fee')->asMinorUnits()->currency('PHP')->sortable()->hideFromIndex(),
-            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable(),
+            Text::make('Status')->sortable(),
+            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
             DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }

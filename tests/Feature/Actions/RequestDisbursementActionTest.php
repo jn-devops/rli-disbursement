@@ -7,6 +7,7 @@ use App\Actions\RequestDisbursementAction;
 use Bavix\Wallet\Models\Transaction;
 use App\Data\GatewayResponseData;
 use Database\Seeders\UserSeeder;
+use Illuminate\Support\Arr;
 use App\Classes\ServiceFee;
 use Whitecube\Price\Price;
 use Brick\Money\Money;
@@ -67,20 +68,29 @@ class RequestDisbursementActionTest extends TestCase
         });
         $credits = Money::of(100, 'PHP');
         $token = $user->createToken('pipe-dream')->plainTextToken;
-        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), [
+        $payload = [
             'reference' => $this->faker->uuid(),
             'bank' => 'CUOBPHM2XXX',
             'account_number' => '039000000052',
             'via' => 'INSTAPAY',
             'amount' => $credits->getAmount()->toInt()
-        ]);
+        ];
+        $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('disbursement-payment'), $payload);
         $response->assertStatus(200);
         $response->assertJsonStructure(['uuid', 'transaction_id', 'status']);
         $transaction = with($operationId = $response->json('transaction_id'), function ($operationId) {
-            return Transaction::where('meta', json_encode(compact('operationId')))->first();
+            return Transaction::whereJsonContains('meta->operationId', $operationId)->first();
         });
         $this->assertTrue($transaction->payable->is($user));
         $this->assertFalse($transaction->confirmed);
+
+        $details = Arr::get($transaction->meta, 'details');
+        $this->assertEquals($payload['reference'], $details['reference_id']);
+        $this->assertEquals($payload['bank'], $details['destination_account']['bank_code']);
+        $this->assertEquals($payload['account_number'], $details['destination_account']['account_number']);
+        $this->assertEquals($payload['via'], $details['settlement_rail']);
+        $this->assertEquals($payload['amount'], Money::ofMinor($details['amount']['num'], $details['amount']['cur'])->getAmount()->toInt());
+
         $this->assertEquals($initialAmountFloat, $user->balanceFloat);
         $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
         $expectedServiceFee = (new ServiceFee($user))->compute($credits);

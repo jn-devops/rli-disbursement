@@ -46,7 +46,8 @@ class RequestDisbursementAction
 
     protected function disburse(User $user, array $validated): GatewayResponseData|bool
     {
-        $payload =     [
+        //TODO: transform payload array to data
+        $payload = [
             "reference_id" => Arr::get($validated, 'reference'),
             "settlement_rail" => Arr::get($validated, 'via'),
             "amount" => $amount = $this->getAmountArray($validated),
@@ -64,7 +65,11 @@ class RequestDisbursementAction
         $credits = Money::of(Arr::get($validated, 'amount'), 'PHP');
         $serviceFee = (new ServiceFee($user))->compute($credits);
         $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
-        $transaction = $user->withdraw($minor_amount, ['operationId' => $response->json('transaction_id')], false);
+        $meta = [
+            'operationId' => $response->json('transaction_id'),
+            'details' => $payload
+        ];
+        $transaction = $user->withdraw($minor_amount, $meta, false);
         $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());
 
         return $response->successful() ? GatewayResponseData::from($responseData) : false;

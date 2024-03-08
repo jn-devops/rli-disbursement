@@ -57,12 +57,15 @@ class Transaction extends Resource
     {
         return [
             ID::make()->sortable(),
-            Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
-            MorphTo::make('Payable'),
             Text::make('Type')->sortable(),
+            MorphTo::make('Payable')->hideFromIndex(),
+            Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
+            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
+            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
+            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
+            Text::make('OperationId', 'meta->operationId')->sortable()->hideFromIndex(),
             Boolean::make('Confirmed')->sortable(),
-            Text::make('OperationId', 'meta->operationId')->sortable(),
-            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable(),
+            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
             DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }
