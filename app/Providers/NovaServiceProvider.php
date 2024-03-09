@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
-use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Fields\DateTime;
+use Illuminate\Support\Carbon;
+use App\Classes\NovaWhitelist;
+use Laravel\Nova\Nova;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -55,14 +56,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate()
     {
         Gate::define('viewNova', function ($user) {
-            return true;
-//            $whitelist = config('disbursement.nova.whitelist');
-//            if ($whitelist === '*') return true;
+            $whitelist = config('disbursement.nova.whitelist');
+            $object = new NovaWhitelist($whitelist);
 
-
-            return in_array($user->email, [
-                config('disbursement.user.system.email')
-            ]);
+            return $object->allow($user->email);
         });
     }
 

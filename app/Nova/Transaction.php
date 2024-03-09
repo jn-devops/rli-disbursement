@@ -63,6 +63,9 @@ class Transaction extends Resource
             Text::make('Via', 'meta->details->settlement_rail')->sortable(),
             Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
             Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
+//            Currency::make('Sent', function($attribute) use ($request) {
+//                return $request->json('meta->details->amount');
+//            })->asMinorUnits()->currency('PHP')->sortable(),
             Text::make('OperationId', 'meta->operationId')->sortable()->hideFromIndex(),
             Boolean::make('Confirmed')->sortable(),
             DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
