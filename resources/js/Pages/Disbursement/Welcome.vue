@@ -35,10 +35,10 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    Got to Profiles, and add credits to your bank account.
+                    After sending cash to us, the amount will be credited to your disbursement account.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    This will be developed further.
+                    Make sure your mobile phone is correct in the <span><NavLink :href="route('profile.show')">profile section</NavLink></span>.
                 </p>
 
                 <p class="mt-4 text-sm">
@@ -63,10 +63,10 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    Send an HTTP POST command to
+                    Send an HTTP POST command to https://disburse.nlitn.io/api/disburse.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    https://disburse-dev.nlitn.io/api/disburse
+                    You may try sending via <span><NavLink :href="route('postman')">Postman</NavLink></span>.
                 </p>
 
                 <p class="mt-4 text-sm">
@@ -91,7 +91,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    <NavLink :href="route('postman')">JSON</NavLink> <span><NavLink :href="route('banks')">banks</NavLink></span>
+                    The endpoint accepts JSON with specific <span><NavLink :href="route('banks')">banking codes</NavLink></span>.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     {
@@ -115,7 +115,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    Generate a token in the API Tokens submenu e.g.,
+                    Generate a token in the <span><NavLink :href="route('api-tokens.index')">API Tokens submenu</NavLink></span>
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     Bearer YpDGDRk1IzTHibG9vswYDii3a3P8T1xqWEkGoEO59933c32c
