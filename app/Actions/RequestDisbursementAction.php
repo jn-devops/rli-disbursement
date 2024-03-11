@@ -3,6 +3,8 @@
 namespace App\Actions;
 
 use App\Data\{AmountData, DestinationAccountData, GatewayResponseData,  RecipientData};
+use App\Models\Product;
+use Bavix\Wallet\Objects\Cart;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\Validator;
 use Lorisleiva\Actions\ActionRequest;
@@ -62,6 +64,7 @@ class RequestDisbursementAction
             ->post(
                 $this->gateway->getEndPoint(), $payload
             );
+
         $credits = Money::of(Arr::get($validated, 'amount'), 'PHP');
         $serviceFee = (new ServiceFee($user))->compute($credits);
         $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
@@ -69,7 +72,27 @@ class RequestDisbursementAction
             'operationId' => $response->json('transaction_id'),
             'details' => $payload
         ];
-        $transaction = $user->withdraw($minor_amount, $meta, false);
+//        $transaction = $user->withdraw($minor_amount, $meta, false);
+        $transaction = $user->withdraw($credits->getMinorAmount()->toInt(), $meta, false);
+        /*************************** start of service fee ****************************/
+        $product_qty_list = [
+            'transaction_fee' => 1, //qty per transaction
+            'merchant_discount_rate' => $credits->getAmount()->toInt(), //qty per peso
+        ];
+
+        $cart = with(app(Cart::class), function ($cart) use ($user, $product_qty_list, &$sf) {
+            $collection = tap(Product::query()->whereIn('code', array_keys($product_qty_list))->get(), function ($products) use (&$cart, $user, $product_qty_list, &$service_fees, &$sf) {
+                foreach ($products as $product) {
+                    $qty = $product_qty_list[$product->code];
+                    $cart = $cart->withItem($product, quantity: $qty);
+                }
+            });
+
+            return $cart;
+        });
+        $user->payCart($cart);
+        /*************************** end of service fee ****************************/
+
         $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());
 
         return $response->successful() ? GatewayResponseData::from($responseData) : false;

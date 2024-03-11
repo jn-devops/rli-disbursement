@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\Actions;
 
+use App\Models\Product;
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
+use Database\Seeders\{ProductSeeder, UserSeeder};
 use App\Actions\RequestDisbursementAction;
 use Bavix\Wallet\Models\Transaction;
 use App\Data\GatewayResponseData;
-use Database\Seeders\UserSeeder;
 use Illuminate\Support\Arr;
 use App\Classes\ServiceFee;
 use Whitecube\Price\Price;
@@ -23,6 +24,7 @@ class RequestDisbursementActionTest extends TestCase
     {
         parent::setUp();
         $this->seed(UserSeeder::class);
+        $this->seed(ProductSeeder::class);
     }
 
     /** @test */
@@ -49,14 +51,16 @@ class RequestDisbursementActionTest extends TestCase
         $transaction = Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first();
         $this->assertTrue($transaction->payable->is($user));
 
-        //since it is not confirmed, the use balance should still be the same until it is confirmed by the bank
+        //since it is not confirmed, the use balance should still be the same until it is confirmed by the bank (old)
+        //since it is not confirmed, the use balance should be deducted of the service fee only
         $this->assertFalse($transaction->confirmed);
-        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $expectedServiceFee = (new ServiceFee($user))->amount($credits);
+        $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
 
-        $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
-        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
-        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
-        $this->assertEquals($expectedServiceFee->inclusive()->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
+//        $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
+//        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
+//        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
+//        $this->assertEquals($expectedServiceFee->inclusive()->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
     }
 
     /** @test */
@@ -91,15 +95,16 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertEquals($payload['via'], $details['settlement_rail']);
         $this->assertEquals($payload['amount'], Money::ofMinor($details['amount']['num'], $details['amount']['cur'])->getAmount()->toInt());
 
-        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $expectedServiceFee = (new ServiceFee($user))->amount($credits);
+        $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
         $actualServiceFee = Price::ofMinor($transaction->amount * -1, 'PHP');
-        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
-        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
-        $this->assertEquals($actualServiceFee->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
+//        $expectedServiceFee = (new ServiceFee($user))->compute($credits);
+//        $this->assertEquals(0, $expectedServiceFee->compareTo($actualServiceFee));
+//        $this->assertEquals($actualServiceFee->getAmount()->toFloat(), $actualServiceFee->inclusive()->getAmount()->toFloat());
 
         $response = $this->withHeaders(['Authorization'=>'Bearer '.$token])->postJson(route('confirm-disbursement'), ['operationId' => $operationId]);
         $response->assertStatus(200);
         $this->assertTrue($transaction->fresh()->confirmed);
-        $this->assertEquals($initialAmountFloat - $expectedServiceFee->inclusive()->getAmount()->toFloat(), $user->fresh()->balanceFloat);
+        $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat() - $credits->getAmount()->toFloat(), $user->fresh()->balanceFloat);
     }
 }

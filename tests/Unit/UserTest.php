@@ -82,4 +82,5 @@ class UserTest extends TestCase
         $service_fee = (new ServiceFee($user))->compute($credits);
         $this->assertEquals(116.5, $service_fee->inclusive()->getAmount()->toFloat());
     }
+
 }

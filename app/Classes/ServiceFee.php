@@ -2,8 +2,8 @@
 
 namespace App\Classes;
 
-
 use Whitecube\Price\Price;
+use App\Models\Product;
 use Brick\Money\Money;
 use App\Models\User;
 
@@ -29,5 +29,19 @@ class ServiceFee
                 $modifier->multiply(1 + 1.5/100);
             })
             ->addModifier('transaction_fee', Money::of(15, 'PHP'));
+    }
+
+    public function amount(Money $credits): Money
+    {
+        $product_qty_list = ['transaction_fee' => 1, 'merchant_discount_rate' => $credits->getAmount()->toInt()];
+        $sf = Money::of(0, 'PHP');
+        tap(Product::query()->whereIn('code', array_keys($product_qty_list))->get(), function ($products) use ($product_qty_list, &$sf) {
+            foreach ($products as $product) {
+                $qty = $product_qty_list[$product->code];
+                $sf = Money::ofMinor($product->getAmountProduct($this->user), 'PHP')->multipliedBy($qty)->plus($sf);
+            }
+        });
+
+        return $sf;
     }
 }

@@ -2,20 +2,18 @@
 
 namespace App\Models;
 
+use Bavix\Wallet\Interfaces\{Confirmable, Customer, WalletFloat};
+use Bavix\Wallet\Traits\{CanConfirm, CanPay, HasWallet};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Bavix\Wallet\Traits\{CanConfirm, HasWallet};
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Notifications\Notifiable;
-use Bavix\Wallet\Interfaces\WalletFloat;
-use Bavix\Wallet\Interfaces\Confirmable;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Laravel\Jetstream\HasProfilePhoto;
 use Bavix\Wallet\Interfaces\Wallet;
-use Bavix\Wallet\Models\Transaction;
 use Laravel\Sanctum\HasApiTokens;
+use App\Traits\HasMeta;
 
 /**
  * Class User
@@ -26,10 +24,12 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $mobile
  * @property float  $transaction_fee
  * @property float  $merchant_discount_rate
+ * @property int    $tf
+ * @property int    $mdr
  *
  * @method   int    getKey()
  */
-class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
+class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, Customer
 {
     use TwoFactorAuthenticatable;
     use HasProfilePhoto;
@@ -39,6 +39,8 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
     use Notifiable;
     use CanConfirm;
     use HasWallet;
+    use HasMeta;
+    use CanPay;
 
     /**
      * The attributes that are mass assignable.
@@ -51,7 +53,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
         'mobile',
         'password',
         'transaction_fee',
-        'merchant_discount_rate'
+        'merchant_discount_rate',
+        'tf',
+        'mdr'
     ];
 
     /**
@@ -87,5 +91,31 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable
     static public function getSystem(): static
     {
         return User::where('email', config('disbursement.user.system.email'))->firstOrFail();
+    }
+
+    public function getTFAttribute(): ?int
+    {
+        return $this->getAttribute('meta')->get('service.tf');
+    }
+
+    public function setTFAttribute(int $value): self
+    {
+
+        $this->getAttribute('meta')->set('service.tf', $value);
+
+        return $this;
+    }
+
+    public function getMDRAttribute(): ?int
+    {
+        return $this->getAttribute('meta')->get('service.mdr');
+    }
+
+    public function setMDRAttribute(int $value): self
+    {
+
+        $this->getAttribute('meta')->set('service.mdr', $value);
+
+        return $this;
     }
 }

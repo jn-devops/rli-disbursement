@@ -1,6 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { usePage } from '@inertiajs/vue3';
+import NavLink from "@/Components/NavLink.vue";
 
 let PHPeso = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -90,7 +91,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    JSON
+                    JSON <span><NavLink :href="route('banks')">banks</NavLink></span>
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     {
