@@ -91,7 +91,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    JSON <span><NavLink :href="route('banks')">banks</NavLink></span>
+                    <NavLink :href="route('postman')">JSON</NavLink> <span><NavLink :href="route('banks')">banks</NavLink></span>
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     {

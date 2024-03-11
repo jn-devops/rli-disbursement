@@ -84,7 +84,7 @@ class RequestDisbursementAction
             $collection = tap(Product::query()->whereIn('code', array_keys($product_qty_list))->get(), function ($products) use (&$cart, $user, $product_qty_list, &$service_fees, &$sf) {
                 foreach ($products as $product) {
                     $qty = $product_qty_list[$product->code];
-                    $cart = $cart->withItem($product, quantity: $qty);
+                    $cart = $cart->withItem($product->setQty($qty), quantity: 1);
                 }
             });
 

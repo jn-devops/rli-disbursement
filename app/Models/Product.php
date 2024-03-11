@@ -27,13 +27,17 @@ class Product extends Model implements ProductInterface
     use HasWallet;
     protected $fillable = ['code', 'name', 'price'];
 
+    protected int $qty = 1;
+
     public function getAmountProduct(Customer $customer): int|string
     {
+//        $qty = $this->qty ?: 1;
+
         return
             $customer instanceof User
                 ? match ($this->code) {
                     'transaction_fee' => $customer->tf ?: $this->price->base()->getMinorAmount()->toFloat(),
-                    'merchant_discount_rate' => $customer->mdr ?: $this->price->base()->getMinorAmount()->toFloat()}
+                    'merchant_discount_rate' => ($customer->mdr ?: $this->price->base()->getMinorAmount()->toFloat()) * $this->qty }
                 : $this->price->base()->getMinorAmount()->toFloat()
             ;
     }
@@ -64,6 +68,13 @@ class Product extends Model implements ProductInterface
     {
         $value = $price->base();
         $this->setAttribute('price', $value->getMinorAmount()->toInt());
+
+        return $this;
+    }
+
+    public function setQty(int $value): self
+    {
+        $this->qty = $value;
 
         return $this;
     }

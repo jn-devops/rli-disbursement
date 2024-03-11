@@ -1,0 +1,51 @@
+{
+	"info": {
+		"_postman_id": "63b2091d-3880-44f4-8219-ec8e965577c9",
+		"name": "nLITn",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31503172",
+		"_collection_link": "https://restless-satellite-205482.postman.co/workspace/My-Workspace~3e7794ce-0903-4470-8300-27c852a32811/collection/31503172-63b2091d-3880-44f4-8219-ec8e965577c9?action=share&source=collection_link&creator=31503172"
+	},
+	"item": [
+		{
+			"name": "API Disburse",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "APWxvQTsSQHGhS8pF9cdWtPm66VDX36Li4tx6q1w6de2876f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"reference\": \"PROD-000001\",\n    \"bank\": \"GXCHPHM2XXX\",\n    \"account_number\": \"09173011987\",\n    \"via\": \"INSTAPAY\",\n    \"amount\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://disburse.nlitn.io/api/disburse",
+					"protocol": "https",
+					"host": [
+						"disburse",
+						"nlitn",
+						"io"
+					],
+					"path": [
+						"api",
+						"disburse"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

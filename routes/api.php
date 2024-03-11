@@ -34,3 +34,6 @@ Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
 
 Route::get('/banks', \App\Actions\GetBankData::class)
     ->name('banks');
+
+Route::get('/postman', \App\Actions\GetPostmanCollectionAction::class)
+    ->name('postman');
