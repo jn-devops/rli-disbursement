@@ -22,6 +22,7 @@ use App\Traits\HasMeta;
  * @property string $name
  * @property string $email
  * @property string $mobile
+ * @property string $webhook
  * @property float  $transaction_fee
  * @property float  $merchant_discount_rate
  * @property int    $tf
@@ -51,6 +52,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         'name',
         'email',
         'mobile',
+        'webhook',
         'password',
         'transaction_fee',
         'merchant_discount_rate',

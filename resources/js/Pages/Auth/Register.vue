@@ -69,7 +69,7 @@ const submit = () => {
                     class="mt-1 block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-2" :message="form.errors.mobile" />
             </div>
 
             <div class="mt-4">

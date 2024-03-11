@@ -18,6 +18,7 @@ const form = useForm({
     name: props.user.name,
     email: props.user.email,
     mobile: props.user.mobile,
+    webhook: props.user.webhook,
     photo: null,
 });
 
@@ -189,6 +190,19 @@ const clearPhotoFileInput = () => {
                     autocomplete="mobile"
                 />
                 <InputError :message="form.errors.mobile" class="mt-2" />
+            </div>
+
+            <!-- Webhook -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="webhook" value="Webhook" />
+                <TextInput
+                    id="webhook"
+                    v-model="form.webhook"
+                    type="text"
+                    class="mt-1 block w-full"
+                    placeholder="https only"
+                />
+                <InputError :message="form.errors.webhook" class="mt-2" />
             </div>
         </template>
 

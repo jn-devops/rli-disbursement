@@ -2,12 +2,13 @@
 
 namespace App\Actions\Fortify;
 
-use App\Models\User;
+use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
+use Illuminate\Support\Arr;
+use App\Models\User;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
@@ -22,7 +23,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'mobile' => ['required', 'string', 'max:255', 'unique:users,mobile'],
+            'mobile' => ['required', 'string', 'max:255'],
+            'webhook' => ['nullable', 'string', 'url:https'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
 
@@ -38,6 +40,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'mobile' => $input['mobile'],
+                'webhook' => Arr::get($input, 'webhook'),
             ])->save();
         }
     }
