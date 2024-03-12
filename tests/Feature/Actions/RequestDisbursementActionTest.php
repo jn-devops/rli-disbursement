@@ -3,8 +3,11 @@
 namespace Tests\Feature\Actions;
 
 use App\Models\Product;
+
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use Database\Seeders\{ProductSeeder, UserSeeder};
+use App\Notifications\DisbursementNotification;
+use Illuminate\Support\Facades\Notification;
 use App\Actions\RequestDisbursementAction;
 use Bavix\Wallet\Models\Transaction;
 use App\Data\GatewayResponseData;
@@ -66,6 +69,7 @@ class RequestDisbursementActionTest extends TestCase
     /** @test */
     public function request_disbursement_action_has_end_point_with_service_fee(): void
     {
+        Notification::fake();
         $initialAmountFloat = 1000;
         $user = tap(User::factory()->create(), function ($user) use ($initialAmountFloat) {
             $user->depositFloat($initialAmountFloat);
@@ -106,5 +110,6 @@ class RequestDisbursementActionTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue($transaction->fresh()->confirmed);
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat() - $credits->getAmount()->toFloat(), $user->fresh()->balanceFloat);
+        Notification::assertSentTo($user, DisbursementNotification::class);
     }
 }

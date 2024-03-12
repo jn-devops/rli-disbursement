@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Actions\SendDisbursementFeedbackAction;
+use App\Events\DisbursementConfirmed;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -20,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        DisbursementConfirmed::class => [
+            SendDisbursementFeedbackAction::class
+        ]
     ];
 
     /**
