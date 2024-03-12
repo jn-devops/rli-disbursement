@@ -120,4 +120,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
 
         return $this;
     }
+
+    public function routeNotificationForWebhook(): string
+    {
+        return $this->webhook;
+    }
 }
