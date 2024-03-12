@@ -48,6 +48,26 @@ Route::middleware([
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)
     ->name('topup-wallet');
 
+Route::get('/banks', function () {
+    $filename = 'banks_list.json';
+    $path = documents_path($filename);
+
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/json',
+        'Content-Disposition' => 'inline; filename="'.$filename.'"'
+    ]);
+})->name('banks');
+
+Route::get('/postman', function () {
+    $filename = 'nLITn.postman_collection.json';
+    $path = documents_path($filename);
+
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/json',
+        'Content-Disposition' => 'inline; filename="'.$filename.'"'
+    ]);
+})->name('postman');
+
 Route::get('/guide', function () {
     $filename = 'guide.pdf';
     $path = documents_path($filename);

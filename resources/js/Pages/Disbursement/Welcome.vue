@@ -66,7 +66,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                     Send an HTTP POST command to https://disburse.nlitn.io/api/disburse.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    You may try sending via <span><NavLink :href="route('postman')">Postman</NavLink></span>.
+                    You may try sending via <span><a :href="route('postman')">Postman</a></span>.
                 </p>
 
                 <p class="mt-4 text-sm">
@@ -91,7 +91,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    The endpoint accepts JSON with specific <span><NavLink :href="route('banks')">banking codes</NavLink></span>.
+                    The endpoint accepts JSON with specific <span><a :href="route('banks')">banking codes</a></span>.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     {
