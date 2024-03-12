@@ -19,7 +19,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
             </h1>
 
             <p class="mt-6 text-gray-500 dark:text-gray-400 leading-relaxed">
-                The Disbursement App provides an API for you to disburse credits from your account in Netbank. We hope you love it.
+                The Disbursement App provides an API for you to disburse credits from your account.
             </p>
         </div>
 

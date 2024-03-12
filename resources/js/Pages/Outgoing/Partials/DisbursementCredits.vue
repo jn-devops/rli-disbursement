@@ -125,8 +125,8 @@ watch (
                         </div>
                     </template>
                     <template #content>
-                        <div>
-                            <div class="block px-4 py-2 text-xs text-gray-400">
+                        <div class="">
+                            <div class="block px-4 py-2 text-xs text-gray-400 w-60">
                                 Settlement Rail
                             </div>
                             <button v-for="rail in props.rails" :key="rail.id" type="button"
