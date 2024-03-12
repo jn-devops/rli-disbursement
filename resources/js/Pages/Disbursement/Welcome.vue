@@ -42,7 +42,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </p>
 
                 <p class="mt-4 text-sm">
-                    <a href="/" class="inline-flex items-center font-semibold text-indigo-700 dark:text-indigo-300">
+                    <a :href="route('guide')" class="inline-flex items-center font-semibold text-indigo-700 dark:text-indigo-300">
                         Explore the documentation
 
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="ms-1 w-5 h-5 fill-indigo-500 dark:fill-indigo-200">

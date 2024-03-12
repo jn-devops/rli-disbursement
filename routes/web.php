@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\{Response, Route, Storage};
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 /*
@@ -48,4 +48,12 @@ Route::middleware([
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)
     ->name('topup-wallet');
 
+Route::get('/guide', function () {
+    $filename = 'guide.pdf';
+    $path = documents_path($filename);
 
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="'.$filename.'"'
+    ]);
+})->name('guide');
