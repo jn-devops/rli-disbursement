@@ -7,6 +7,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\MorphTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class Transaction extends Resource
 {
@@ -64,7 +65,7 @@ class Transaction extends Resource
             Text::make('Via', function ($attribute) use ($request) {
                 return match($this->getAttribute('type')) {
                     'withdraw' => $request->json('meta->details->settlement_rail'),
-                    'deposit' =>  $request->json('meta->channel'),
+                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'channel'),
                 };
             })->sortable(),
 
