@@ -62,4 +62,25 @@ class Gateway
 
         return BankData::collectFromJsonFile($json_path);
     }
+
+//    public function getQRHeaders(): array
+//    {
+//        return [
+//            'Content-Type' => 'application/json',
+//            'Authorization' => 'Bearer ' . 'EbiHGXVPWLTwzcw0-aEj26TCOJE7syX0xXtRfozfe68.q4yHYcmwUqUWmp4Ovy_G66Mnb4vQHEoJHvxh0iR_v_4'
+//        ];
+//    }
+
+    public function getQREndPoint(): string
+    {
+        return config('disbursement.server.qr-end-point');
+    }
+
+    public function getDestinationAccount(string $account): string
+    {
+        return __(':alias:account', [
+            'alias' => config('disbursement.client.alias'),
+            'account' => $account
+        ]);
+    }
 }

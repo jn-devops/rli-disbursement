@@ -27,6 +27,8 @@ use App\Traits\HasMeta;
  * @property float  $merchant_discount_rate
  * @property int    $tf
  * @property int    $mdr
+ * @property string $merchant_name
+ * @property string $merchant_city
  *
  * @method   int    getKey()
  */
@@ -57,7 +59,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         'transaction_fee',
         'merchant_discount_rate',
         'tf',
-        'mdr'
+        'mdr',
+        'merchant_name',
+        'merchant_city',
     ];
 
     /**
@@ -117,6 +121,32 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
     {
 
         $this->getAttribute('meta')->set('service.mdr', $value);
+
+        return $this;
+    }
+
+    public function getMerchantNameAttribute(): ?string
+    {
+        return $this->getAttribute('meta')->get('merchant.name');
+    }
+
+    public function setMerchantNameAttribute(string $value): self
+    {
+
+        $this->getAttribute('meta')->set('merchant.name', $value);
+
+        return $this;
+    }
+
+    public function getMerchantCityAttribute(): ?string
+    {
+        return $this->getAttribute('meta')->get('merchant.city');
+    }
+
+    public function setMerchantCityAttribute(string $value): self
+    {
+
+        $this->getAttribute('meta')->set('merchant.city', $value);
 
         return $this;
     }

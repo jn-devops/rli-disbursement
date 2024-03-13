@@ -30,6 +30,9 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'profile_photo_path' => null,
             'current_team_id' => null,
+            'webhook' => $this->faker->url(),
+            'merchant_name' => $this->faker->name(),
+            'merchant_city' => $this->faker->city(),
         ];
     }
 

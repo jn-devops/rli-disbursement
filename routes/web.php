@@ -43,6 +43,9 @@ Route::middleware([
 
     Route::post('/update-fees',  [\App\Http\Controllers\SendController::class, 'updateFees'])
         ->name('update-fees');
+
+    Route::post('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class)
+        ->name('generate-qr');
 });
 
 Route::post('/topup-wallet', \App\Actions\TopupWalletAction::class)

@@ -20,6 +20,14 @@ class UserTest extends TestCase
         $this->seed(UserSeeder::class);
     }
 
+    public function test_user_attributes(): void
+    {
+        $user = User::factory()->create();
+        $this->assertIsString($user->webhook);
+        $this->assertIsString($user->merchant_name);
+        $this->assertIsString($user->merchant_city);
+    }
+
     public function test_user_wallet_int(): void
     {
         $user = User::factory()->create();

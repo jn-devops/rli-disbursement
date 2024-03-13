@@ -11,6 +11,18 @@ class UserObserver
      */
     public function creating(User $user): void
     {
+        if (null == $user->merchant_name) {
+            $user->merchant_name = $user->name;
+        }
+        if (null == $user->merchant_city) {
+            $user->merchant_city = config('disbursement.merchant.default.city');
+        }
+        if (null == $user->tf) {
+            $user->tf = config('disbursement.user.transaction_fee');
+        }
+        if (null == $user->mdr) {
+            $user->mdr = config('disbursement.user.merchant_discount_rate');
+        }
         if (null == $user->transaction_fee) {
             $user->transaction_fee = config('disbursement.user.transaction_fee');
         }

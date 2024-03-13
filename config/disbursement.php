@@ -4,10 +4,12 @@ return [
     'server' => [
         'end-point' => env('NETBANK_DISBURSEMENT_ENDPOINT'),
         'token-end-point' => env('NETBANK_TOKEN_ENDPOINT'),
+        'qr-end-point' => env('NETBANK_QR_ENDPOINT'),
     ],
     'client' => [
         'id' => env('NETBANK_CLIENT_ID', ''),
-        'secret' => env('NETBANK_CLIENT_SECRET', '')
+        'secret' => env('NETBANK_CLIENT_SECRET', ''),
+        'alias' => env('NETBANK_CLIENT_ALIAS', ''),
     ],
     'source' => [
         'account_number' => env('NETBANK_SOURCE_ACCOUNT_NUMBER',''),
@@ -40,5 +42,10 @@ return [
     ],
     'nova' => [
         'whitelist' => env('NOVA_WHITELIST', '*')
+    ],
+    'merchant' => [
+        'default' => [
+            'city' => config('DEFAULT_MERCHANT_CITY', 'Manila')
+        ],
     ],
 ];
