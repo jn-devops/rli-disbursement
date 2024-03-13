@@ -19,7 +19,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
 </script>
 
 <template>
-    <AppLayout title="Send">
+    <AppLayout title="Outgoing">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Outgoing
@@ -41,7 +41,6 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
                 <div>
                     <DepositAmount :agent="$page.props.agent"/>
-                    <SectionBorder />
                 </div>
             </div>
         </div>

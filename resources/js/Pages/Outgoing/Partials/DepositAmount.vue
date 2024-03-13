@@ -57,7 +57,7 @@ watch (
             Request for Deposit
         </template>
         <template #description>
-            <div>Embed an amount in a QR Code for Deposit</div>
+            <div>Optionally embed an amount in a QR Code for Deposit</div>
         </template>
         <template #form>
             <div class="col-span-6 sm:col-span-4">
