@@ -68,9 +68,20 @@ class Transaction extends Resource
                     'deposit' =>  Arr::get($this->getAttribute('meta'), 'channel'),
                 };
             })->sortable(),
-
-            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
-            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
+//            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
+            Text::make('Bank', function ($attribute) use ($request) {
+                return match($this->getAttribute('type')) {
+                    'withdraw' => $request->json('meta->details->destination_account->bank_code'),
+                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.institutionCode'),
+                };
+            })->sortable(),
+//            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
+            Text::make('Account #', function ($attribute) use ($request) {
+                return match($this->getAttribute('type')) {
+                    'withdraw' => $request->json('meta->details->destination_account->account_number'),
+                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.accountNumber'),
+                };
+            })->sortable(),
 //            Currency::make('Sent', function($attribute) use ($request) {
 //                return $request->json('meta->details->amount');
 //            })->asMinorUnits()->currency('PHP')->sortable(),
