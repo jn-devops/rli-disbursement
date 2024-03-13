@@ -60,7 +60,14 @@ class Transaction extends Resource
             Text::make('Type')->sortable(),
             MorphTo::make('Payable')->hideFromIndex(),
             Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
-            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
+//            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
+            Text::make('Via', function ($attribute) use ($request) {
+                return match($this->getAttribute('type')) {
+                    'withdraw' => $request->json('meta->details->settlement_rail'),
+                    'deposit' =>  $request->json('meta->channel'),
+                };
+            })->sortable(),
+
             Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
             Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
 //            Currency::make('Sent', function($attribute) use ($request) {
