@@ -5,6 +5,7 @@ namespace App\Actions;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Math\Exception\NumberFormatException;
+use Illuminate\Http\RedirectResponse;
 use Endroid\QrCode\{QrCode, Writer\PngWriter};
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
@@ -21,6 +22,12 @@ class GenerateDepositQRCodeAction
     {
     }
 
+    /**
+     * @param User $user
+     * @param Money $credits
+     * @return string
+     * @throws \Brick\Math\Exception\MathException
+     */
     protected function getQRCode(User $user, Money $credits): string
     {
         $response = Http::withHeaders($this->gateway->getHeaders())->post($this->gateway->getQREndPoint(),  [
@@ -79,5 +86,21 @@ class GenerateDepositQRCodeAction
             'name' => 'qrcode.generated',
             'data' => $imageBytes,
         ]);
+    }
+
+    /**
+     * @param $response
+     * @param ActionRequest $request
+     * @return string
+     * @throws NumberFormatException
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
+     */
+    public function jsonResponse(RedirectResponse $response, ActionRequest $request): string
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+
+        return $this->handle($user, $validated['amount'] ?: 0);
     }
 }

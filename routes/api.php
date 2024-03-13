@@ -34,3 +34,5 @@ Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
 
 Route::get('/banks', \App\Actions\GetBankData::class)
     ->name('api-banks');
+
+Route::middleware('auth:sanctum')->get('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class);
