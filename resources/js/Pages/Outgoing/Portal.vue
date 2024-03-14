@@ -2,6 +2,7 @@
 import DisbursementToOneForm from "@/Pages/Outgoing/Partials/DisbursementCredits.vue";
 import TransferCredits from "@/Pages/Outgoing/Partials/TransferCredits.vue";
 import DepositAmount from "@/Pages/Outgoing/Partials/DepositAmount.vue";
+import PayAmount from "@/Pages/Outgoing/Partials/PayAmount.vue";
 import SectionBorder from '@/Components/SectionBorder.vue';
 import { router, usePage } from "@inertiajs/vue3";
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -41,6 +42,10 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
                 <div>
                     <DepositAmount :agent="$page.props.agent"/>
+                    <SectionBorder />
+                </div>
+                <div>
+                    <PayAmount :agent="$page.props.agent"/>
                 </div>
             </div>
         </div>
