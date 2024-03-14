@@ -20,8 +20,14 @@ class ConfirmDepositAction
     {
         $response = DepositResponseData::from($validated);
         $amountFloat = $response->amount;
-        $mobile = $response->referenceCode;
-        $user = User::where('mobile', $mobile)->firstOrFail();
+
+        /**  merchant details processing **/
+            if (null == $user = User::where('mobile', $response->referenceCode)->first()) {
+                if (strlen($merchant_code = $response->merchant_details->merchant_code) == 1) {
+                    $user = User::where('meta->merchant->code', $merchant_code)->firstOrFail();
+                }
+            };
+        /**             end              **/
 
         $transfer = TopupWalletAction::run($user, $amountFloat);
         $transfer->deposit->meta = $response->toArray();
@@ -55,7 +61,8 @@ class ConfirmDepositAction
             'productBranchCode' =>  ['required', 'string'],
             'recipientAccountNumber' =>  ['required', 'string'],
             'recipientAccountNumberBankFormat' =>  ['required', 'string'],
-            'referenceCode' =>  ['required', 'string', 'exists:users,mobile'],
+//            'referenceCode' =>  ['required', 'string', 'exists:users,mobile'],
+            'referenceCode' =>  ['required', 'string'],
             'referenceNumber' =>  ['required', 'string'],
             'registrationTime' =>  ['required', 'string'],
             'remarks' =>  ['required', 'string'],
