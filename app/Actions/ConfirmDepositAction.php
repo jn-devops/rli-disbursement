@@ -64,6 +64,9 @@ class ConfirmDepositAction
             'sender.institutionCode' => ['required', 'string'],
             'sender.name' => ['required', 'string'],
             'transferType' =>  ['required', 'string'],
+            'merchant_details' => ['nullable', 'array'],
+            'merchant_details.merchant_code' => ['nullable', 'string'],
+            'merchant_details.merchant_account' => ['nullable', 'string'],
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Data;
 
+use Illuminate\Support\Optional;
 use Spatie\LaravelData\Data;
 
 class DepositResponseData extends Data
@@ -21,6 +22,7 @@ class DepositResponseData extends Data
         public string $registrationTime,
         public string $remarks,
         public DepositSenderData $sender,
-        public string $transferType
+        public string $transferType,
+        public DepositMerchantDetailsData|Optional $merchant_details
     ) {}
 }

@@ -20,7 +20,7 @@ class ConfirmDepositActionTest extends TestCase
     protected User $system;
 
     protected string $json_template = <<<JSON
-            {"alias":"91500","amount"::amount,"channel":"INSTAPAY","commandId":25462208,"externalTransferStatus":"SETTLED","operationId":23868611,"productBranchCode":"113","recipientAccountNumber":"9150009173011987","recipientAccountNumberBankFormat":"113-001-00001-9","referenceCode":":mobile","referenceNumber":"20240301PAPHPHM1XXXG000000000490635","registrationTime":"2024-03-01T20:50:57.942","remarks":"InstaPay transfer #20240301PAPHPHM1XXXG000000000490635","sender":{"accountNumber":"639173011987","institutionCode":"PAPHPHM1XXX","name":"Lester Hurtado"},"transferType":"P2P"}
+            {"alias":"91500","amount"::amount,"channel":"INSTAPAY","commandId":25462208,"externalTransferStatus":"SETTLED","operationId":23868611,"productBranchCode":"113","recipientAccountNumber":"9150009173011987","recipientAccountNumberBankFormat":"113-001-00001-9","referenceCode":":mobile","referenceNumber":"20240301PAPHPHM1XXXG000000000490635","registrationTime":"2024-03-01T20:50:57.942","remarks":"InstaPay transfer #20240301PAPHPHM1XXXG000000000490635","sender":{"accountNumber":"639173011987","institutionCode":"PAPHPHM1XXX","name":"Lester Hurtado"},"transferType":"P2P","merchant_details": {"merchant_code": "1","merchant_account": "09171234567"}}
 JSON;
     public function setUp(): void
     {
