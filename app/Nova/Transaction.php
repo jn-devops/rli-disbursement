@@ -2,12 +2,14 @@
 
 namespace App\Nova;
 
+use App\Data\BankData;
 use Laravel\Nova\Fields\{Boolean, Currency, DateTime, ID, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use App\Models\User;
 
 class Transaction extends Resource
 {
@@ -79,7 +81,7 @@ class Transaction extends Resource
             Text::make('Account', function ($attribute) use ($request) {
                 return match($this->getAttribute('type')) {
                     'withdraw' => $request->json('meta->details->destination_account->account_number'),
-                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.institutionCode') . ' - ' . Arr::get($this->getAttribute('meta'), 'referenceCode'),
+                    'deposit' =>  $this->getInstitution($request) . ' - ' . $this->getAccount($request),
                 };
             })->sortable(),
 //            Currency::make('Sent', function($attribute) use ($request) {
@@ -151,5 +153,31 @@ class Transaction extends Resource
     public function authorizedToUpdate(Request $request)
     {
         return false;
+    }
+
+    protected function getInstitution(NovaRequest $request): string
+    {
+        $institution = null;
+        $bank_date = BankData::collectFromJsonFile('banks_list.json'); //TODO: put this in cache
+        $institution_code = Arr::get($this->getAttribute('meta'), 'sender.institutionCode');
+        if ($bank = Arr::get($bank_date, $institution_code))
+            $institution = $bank->name;
+
+        return $institution ?: $institution_code;
+    }
+
+    protected function getAccount(NovaRequest $request): string
+    {
+        $account = '-';
+        if (($user = $this->payable) instanceof User) {
+            if ($user->mobile === $reference_code = Arr::get($this->getAttribute('meta'), 'referenceCode')) {
+                $account = $reference_code;
+            }
+            else {
+                $account = Arr::get($this->getAttribute('meta'), 'merchant_details.merchant_account');
+            }
+        }
+
+        return $account;
     }
 }
