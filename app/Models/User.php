@@ -27,6 +27,7 @@ use App\Traits\HasMeta;
  * @property float  $merchant_discount_rate
  * @property int    $tf
  * @property int    $mdr
+ * @property string $merchant_code
  * @property string $merchant_name
  * @property string $merchant_city
  *
@@ -60,6 +61,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         'merchant_discount_rate',
         'tf',
         'mdr',
+        'merchant_code',
         'merchant_name',
         'merchant_city',
     ];
@@ -91,7 +93,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_url',
+        'profile_photo_url', 'merchant_code', 'merchant_name', 'merchant_city'
     ];
 
     static public function getSystem(): static
@@ -130,10 +132,23 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         return $this->getAttribute('meta')->get('merchant.name');
     }
 
-    public function setMerchantNameAttribute(string $value): self
+    public function setMerchantNameAttribute(?string $value): self
     {
 
         $this->getAttribute('meta')->set('merchant.name', $value);
+
+        return $this;
+    }
+
+    public function getMerchantCodeAttribute(): ?string
+    {
+        return $this->getAttribute('meta')->get('merchant.code');
+    }
+
+    public function setMerchantCodeAttribute(?string $value): self
+    {
+
+        $this->getAttribute('meta')->set('merchant.code', $value);
 
         return $this;
     }
@@ -143,7 +158,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         return $this->getAttribute('meta')->get('merchant.city');
     }
 
-    public function setMerchantCityAttribute(string $value): self
+    public function setMerchantCityAttribute(?string $value): self
     {
 
         $this->getAttribute('meta')->set('merchant.city', $value);

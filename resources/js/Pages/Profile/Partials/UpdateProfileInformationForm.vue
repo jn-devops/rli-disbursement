@@ -19,6 +19,9 @@ const form = useForm({
     email: props.user.email,
     mobile: props.user.mobile,
     webhook: props.user.webhook,
+    merchant_code: props.user.merchant_code,
+    merchant_name: props.user.merchant_name,
+    merchant_city: props.user.merchant_city,
     photo: null,
 });
 
@@ -203,6 +206,43 @@ const clearPhotoFileInput = () => {
                     placeholder="https only"
                 />
                 <InputError :message="form.errors.webhook" class="mt-2" />
+            </div>
+
+            <!-- Merchant Code -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="merchant_code" value="Merchant Code" />
+                <TextInput
+                    id="merchant_code"
+                    v-model="form.merchant_code"
+                    type="text"
+                    class="mt-1 block w-full"
+                    placeholder="1 letter only"
+                />
+                <InputError :message="form.errors.merchant_code" class="mt-2" />
+            </div>
+
+            <!-- Merchant Name -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="merchant_name" value="Merchant Name" />
+                <TextInput
+                    id="merchant_name"
+                    v-model="form.merchant_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                />
+                <InputError :message="form.errors.merchant_name" class="mt-2" />
+            </div>
+
+            <!-- Merchant City -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="merchant_city" value="Merchant City" />
+                <TextInput
+                    id="merchant_city"
+                    v-model="form.merchant_city"
+                    type="text"
+                    class="mt-1 block w-full"
+                />
+                <InputError :message="form.errors.merchant_city" class="mt-2" />
             </div>
         </template>
 

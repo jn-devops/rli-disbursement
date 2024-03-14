@@ -2,14 +2,15 @@
 
 namespace App\Actions;
 
+use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Math\Exception\NumberFormatException;
 use Illuminate\Http\RedirectResponse;
-use Endroid\QrCode\{QrCode, Writer\PngWriter};
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Arr;
 use App\Classes\Gateway;
 use Brick\Money\Money;
 use App\Models\User;
@@ -25,17 +26,20 @@ class GenerateDepositQRCodeAction
     /**
      * @param User $user
      * @param Money $credits
+     * @param string|null $mobile
      * @return string
-     * @throws \Brick\Math\Exception\MathException
+     * @throws MathException
      */
-    protected function getQRCode(User $user, Money $credits): string
+    protected function getQRCode(User $user, Money $credits, string $mobile = null): string
     {
+        $merchant_code = $mobile ? $user->merchant_code : null;
+        $mobile = $mobile ?: $user->mobile;
         $response = Http::withHeaders($this->gateway->getHeaders())->post($this->gateway->getQREndPoint(),  [
             "merchant_name" => $user->merchant_name,
             "merchant_city" => $user->merchant_city,
             "qr_type" => $credits->isZero() ? "Static" : "Dynamic",
             "qr_transaction_type" => "P2M",
-            "destination_account" => $this->gateway->getDestinationAccount($user->mobile),
+            "destination_account" => $this->gateway->getDestinationAccount($mobile, $merchant_code),
             "resolution" => 480,
             "amount" => [
                 "cur" => "PHP",
@@ -50,13 +54,13 @@ class GenerateDepositQRCodeAction
     /**
      * @throws UnknownCurrencyException
      * @throws RoundingNecessaryException
-     * @throws NumberFormatException
+     * @throws NumberFormatException|MathException
      */
-    public function handle(User $user, int $amount): string
+    public function handle(User $user, int $amount, string $mobile = null): string
     {
         $credits = Money::of($amount, 'PHP');
 
-        return $this->getQRCode($user, $credits);
+        return $this->getQRCode($user, $credits, $mobile);
     }
 
     /**
@@ -65,7 +69,8 @@ class GenerateDepositQRCodeAction
     public function rules(): array
     {
         return [
-            'amount' => ['nullable', 'integer', 'min:50']
+            'amount' => ['nullable', 'integer', 'min:50'],
+            'mobile' => ['nullable', 'string', 'min:11', 'max:11'],
         ];
     }
 
@@ -80,7 +85,7 @@ class GenerateDepositQRCodeAction
     {
         $user = $request->user();
         $validated = $request->validated();
-        $imageBytes = $this->handle($user, $validated['amount'] ?: 0);
+        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'mobile'));
 
         return back()->with('event', [
             'name' => 'qrcode.generated',
@@ -89,12 +94,13 @@ class GenerateDepositQRCodeAction
     }
 
     /**
-     * @param $response
+     * @param RedirectResponse $response
      * @param ActionRequest $request
      * @return string
      * @throws NumberFormatException
      * @throws RoundingNecessaryException
      * @throws UnknownCurrencyException
+     * @throws MathException
      */
     public function jsonResponse(RedirectResponse $response, ActionRequest $request): string
     {

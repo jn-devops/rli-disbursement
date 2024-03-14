@@ -31,6 +31,7 @@ class UserFactory extends Factory
             'profile_photo_path' => null,
             'current_team_id' => null,
             'webhook' => $this->faker->url(),
+            'merchant_code' => substr($this->faker->word(), -1),
             'merchant_name' => $this->faker->name(),
             'merchant_city' => $this->faker->city(),
         ];

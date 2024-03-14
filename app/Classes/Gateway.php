@@ -76,11 +76,13 @@ class Gateway
         return config('disbursement.server.qr-end-point');
     }
 
-    public function getDestinationAccount(string $account): string
+    public function getDestinationAccount(string $account, string $code = null): string
     {
         return __(':alias:account', [
             'alias' => config('disbursement.client.alias'),
-            'account' => $account
+            'account' => $code
+                ? $code[0] . substr($account, 1)
+                : $account
         ]);
     }
 }

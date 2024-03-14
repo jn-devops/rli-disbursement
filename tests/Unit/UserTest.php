@@ -24,6 +24,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $this->assertIsString($user->webhook);
+        $this->assertIsString($user->merchant_code);
         $this->assertIsString($user->merchant_name);
         $this->assertIsString($user->merchant_city);
     }
