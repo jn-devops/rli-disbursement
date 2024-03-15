@@ -14,7 +14,7 @@ const confirmingTopup = ref(false);
 const imageBytes = ref(null);
 
 const form = useForm({
-    mobile: null,
+    account: null,
     amount: null,
 });
 
@@ -55,23 +55,23 @@ watch (
 <template>
     <FormSection @submitted="generate">
         <template #title>
-            Request for Deposit
+            Request for Payment
         </template>
         <template #description>
-            <div>Optionally embed an amount in a QR Code for Deposit</div>
+            <div>Optionally embed an amount in a QR Code for Payment</div>
         </template>
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="mobile" value="Mobile (account #)" />
+                <InputLabel for="mobile" value="Account # (mobile)" />
                 <TextInput
                     id="mobile"
-                    v-model="form.mobile"
+                    v-model="form.account"
                     type="Text"
                     class="mt-1 block w-full"
                     placeholder="09171234567"
                     autofocus
                 />
-                <InputError :message="form.errors.mobile" class="mt-2" />
+                <InputError :message="form.errors.account" class="mt-2" />
             </div>
 
             <div class="col-span-6 sm:col-span-4">

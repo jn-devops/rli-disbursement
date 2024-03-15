@@ -2,12 +2,12 @@
 
 namespace App\Actions;
 
-use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Math\Exception\NumberFormatException;
-use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Brick\Math\Exception\MathException;
+use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Arr;
@@ -26,20 +26,20 @@ class GenerateDepositQRCodeAction
     /**
      * @param User $user
      * @param Money $credits
-     * @param string|null $mobile
+     * @param string|null $account
      * @return string
      * @throws MathException
      */
-    protected function getQRCode(User $user, Money $credits, string $mobile = null): string
+    protected function getQRCode(User $user, Money $credits, string $account = null): string
     {
-        $merchant_code = $mobile ? $user->merchant_code : null;
-        $mobile = $mobile ?: $user->mobile;
+        $merchant_code = $account ? $user->merchant_code : null;
+        $account = $account ?: $user->mobile;
         $response = Http::withHeaders($this->gateway->getHeaders())->post($this->gateway->getQREndPoint(),  [
             "merchant_name" => $user->merchant_name,
             "merchant_city" => $user->merchant_city,
             "qr_type" => $credits->isZero() ? "Static" : "Dynamic",
             "qr_transaction_type" => "P2M",
-            "destination_account" => $this->gateway->getDestinationAccount($mobile, $merchant_code),
+            "destination_account" => $this->gateway->getDestinationAccount($account, $merchant_code),
             "resolution" => 480,
             "amount" => [
                 "cur" => "PHP",
@@ -70,22 +70,22 @@ class GenerateDepositQRCodeAction
     {
         return [
             'amount' => ['nullable', 'integer', 'min:50'],
-            'mobile' => ['nullable', 'string', 'min:11', 'max:11'],
+            'account' => ['nullable', 'string', 'min:11', 'max:11', 'starts_with:0'],
         ];
     }
 
     /**
      * @param ActionRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws NumberFormatException
      * @throws RoundingNecessaryException
-     * @throws UnknownCurrencyException
+     * @throws UnknownCurrencyException|MathException
      */
-    public function asController(ActionRequest $request): \Illuminate\Http\RedirectResponse
+    public function asController(ActionRequest $request): RedirectResponse
     {
         $user = $request->user();
         $validated = $request->validated();
-        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'mobile'));
+        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'account'));
 
         return back()->with('event', [
             'name' => 'qrcode.generated',
