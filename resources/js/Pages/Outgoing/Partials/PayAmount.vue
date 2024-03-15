@@ -58,17 +58,18 @@ watch (
             Request for Payment
         </template>
         <template #description>
-            <div>Optionally embed an amount in a QR Code for Payment</div>
+            <div>Optionally embed an amount in the QR Code for Payment</div>
         </template>
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="mobile" value="Account # (mobile)" />
+                <InputLabel for="account" value="Account # (mobile)" />
                 <TextInput
-                    id="mobile"
+                    id="account"
                     v-model="form.account"
                     type="Text"
                     class="mt-1 block w-full"
-                    placeholder="09171234567"
+                    placeholder="starts with `0` i.e., 09171234567"
+                    required
                     autofocus
                 />
                 <InputError :message="form.errors.account" class="mt-2" />
@@ -93,7 +94,7 @@ watch (
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Generate
+                Generate QR Code
             </PrimaryButton>
 
             <DialogModal :show="confirmingTopup" @close="closeModal">

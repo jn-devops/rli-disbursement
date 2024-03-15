@@ -70,7 +70,7 @@ class GenerateDepositQRCodeAction
     {
         return [
             'amount' => ['nullable', 'integer', 'min:50'],
-            'account' => ['nullable', 'string', 'min:11', 'max:11', 'starts_with:0'],
+            'account' => ['nullable', 'numeric', 'starts_with:0'],
         ];
     }
 
