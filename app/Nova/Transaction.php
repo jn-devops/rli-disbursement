@@ -2,13 +2,13 @@
 
 namespace App\Nova;
 
-use App\Data\BankData;
 use Laravel\Nova\Fields\{Boolean, Currency, DateTime, ID, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
+use Illuminate\Support\{Arr, Str};
 use Laravel\Nova\Fields\MorphTo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use App\Data\BankData;
 use App\Models\User;
 
 class Transaction extends Resource
@@ -71,14 +71,16 @@ class Transaction extends Resource
                 };
             })->sortable(),
 //            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
-            Text::make('Holder', function ($attribute) use ($request) {
-                return match($this->getAttribute('type')) {
+            Text::make('Account Holder', function ($attribute) use ($request) {
+                $holder = match($this->getAttribute('type')) {
                     'withdraw' => $request->json('meta->details->destination_account->bank_code'),
                     'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.name'),
                 };
+
+                return Str::title($holder);
             })->sortable(),
 //            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
-            Text::make('Account', function ($attribute) use ($request) {
+            Text::make('Account Id', function ($attribute) use ($request) {
                 return match($this->getAttribute('type')) {
                     'withdraw' => $request->json('meta->details->destination_account->account_number'),
                     'deposit' =>  $this->getInstitution($request) . ' - ' . $this->getAccount($request),
@@ -89,8 +91,10 @@ class Transaction extends Resource
 //            })->asMinorUnits()->currency('PHP')->sortable(),
             Text::make('OperationId', 'meta->operationId')->sortable()->hideFromIndex(),
             Boolean::make('Confirmed')->sortable(),
-            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
-            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
+            DateTime::make('Created', 'created_at')->sortable()->hideFromIndex(),
+            DateTime::make('Updated', 'updated_at')->sortable(),
+//            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
+//            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }
 
@@ -163,7 +167,7 @@ class Transaction extends Resource
         if ($bank = Arr::get($bank_date, $institution_code))
             $institution = $bank->name;
 
-        return $institution ?: $institution_code;
+        return Str::upper($institution ?: $institution_code);
     }
 
     protected function getAccount(NovaRequest $request): string
