@@ -54,10 +54,10 @@ watch (
 <template>
     <FormSection @submitted="generate">
         <template #title>
-            Request for Deposit
+            Topup Account
         </template>
         <template #description>
-            <div>Optionally embed an amount in the QR Code for Deposit</div>
+            <div>Optionally embed an amount in the QR Code</div>
         </template>
         <template #form>
             <div class="col-span-6 sm:col-span-4">
