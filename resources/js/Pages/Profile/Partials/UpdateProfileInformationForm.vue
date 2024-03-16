@@ -216,7 +216,7 @@ const clearPhotoFileInput = () => {
                     v-model="form.merchant_code"
                     type="text"
                     class="mt-1 block w-full"
-                    placeholder="1 letter only"
+                    placeholder="1 numeral only"
                 />
                 <InputError :message="form.errors.merchant_code" class="mt-2" />
             </div>

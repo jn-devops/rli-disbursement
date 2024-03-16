@@ -89,7 +89,7 @@ watch (
                 </template>
                 <template #content>
                     <div class="col-span-6 sm:col-span-4">
-                        <img :src="imageBytes" alt="qr-code"/>
+                        <img :src="imageBytes" alt="qr-code" class="mx-auto"/>
                     </div>
                 </template>
                 <template #footer>

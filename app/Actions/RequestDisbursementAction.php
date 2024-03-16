@@ -2,19 +2,19 @@
 
 namespace App\Actions;
 
-use App\Data\{AmountData, DestinationAccountData, GatewayResponseData,  RecipientData};
-use App\Models\Product;
-use Bavix\Wallet\Objects\Cart;
+use Brick\Math\Exception\{MathException, NumberFormatException, RoundingNecessaryException};
+use App\Data\{AmountData, DestinationAccountData, GatewayResponseData, RecipientData};
+use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
+use Brick\Money\Exception\UnknownCurrencyException;
+use App\Classes\{Address, Gateway, ServiceFee};
 use Lorisleiva\Actions\Concerns\AsAction;
-use Illuminate\Support\Facades\Validator;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
-use App\Classes\{Address, Gateway, ServiceFee};
 use Illuminate\Validation\Rule;
+use App\Models\{Product, User};
+use Bavix\Wallet\Objects\Cart;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
-use ReflectionMethod;
-use App\Models\User;
 
 /**
  * Class RequestDisbursementAction
@@ -31,21 +31,13 @@ class RequestDisbursementAction
     {
     }
 
-//    public static function execute(...$arguments): mixed
-//    {
-//        $action = static::make();
-//        $argName = $action->validated ?? 'validated';
-//        foreach ((new ReflectionMethod(static::class, 'handle'))->getParameters() as $parameter) {
-//            if (($parameter->name == $argName) and ($parameter->getType() == 'array')) {
-//                $attribs = func_get_args()[$parameter->getPosition()];
-//
-//                return $action->handle(Validator::validate($attribs, $action->rules()));
-//            }
-//        }
-//
-//        return $action->handle(...$arguments);
-//    }
-
+    /**
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
+     * @throws NumberFormatException
+     * @throws ExceptionInterface
+     * @throws MathException
+     */
     protected function disburse(User $user, array $validated): GatewayResponseData|bool
     {
         //TODO: transform payload array to data
@@ -66,13 +58,12 @@ class RequestDisbursementAction
             );
 
         $credits = Money::of(Arr::get($validated, 'amount'), 'PHP');
-        $serviceFee = (new ServiceFee($user))->compute($credits);
-        $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
+//        $serviceFee = (new ServiceFee($user))->compute($credits);
+//        $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
         $meta = [
             'operationId' => $response->json('transaction_id'),
             'details' => $payload
         ];
-//        $transaction = $user->withdraw($minor_amount, $meta, false);
         $transaction = $user->withdraw($credits->getMinorAmount()->toInt(), $meta, false);
         /*************************** start of service fee ****************************/
         $product_qty_list = [
@@ -98,6 +89,16 @@ class RequestDisbursementAction
         return $response->successful() ? GatewayResponseData::from($responseData) : false;
     }
 
+    /**
+     * @param User $user
+     * @param array $validated
+     * @return GatewayResponseData|bool
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
+     * @throws NumberFormatException
+     * @throws ExceptionInterface
+     * @throws MathException
+     */
     public function handle(User $user, array $validated): GatewayResponseData|bool
     {
         return $this->disburse($user, $validated);
@@ -123,6 +124,15 @@ class RequestDisbursementAction
         ];
     }
 
+    /**
+     * @param ActionRequest $request
+     * @return \Illuminate\Http\Response
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
+     * @throws NumberFormatException
+     * @throws ExceptionInterface
+     * @throws MathException
+     */
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
         $user = $request->user();
@@ -131,6 +141,10 @@ class RequestDisbursementAction
         return response($response->toJson(), 200);
     }
 
+    /**
+     * @param array $validated
+     * @return array
+     */
     protected function getDestinationAccount(array $validated): array
     {
         return DestinationAccountData::from([
@@ -139,6 +153,10 @@ class RequestDisbursementAction
         ])->toArray();
     }
 
+    /**
+     * @param array $validated
+     * @return array
+     */
     protected function getRecipient(array $validated): array
     {
         return RecipientData::from(
@@ -149,6 +167,14 @@ class RequestDisbursementAction
         )->toArray();
     }
 
+    /**
+     * @param array $validated
+     * @return array
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
+     * @throws NumberFormatException
+     * @throws MathException
+     */
     protected function getAmountArray(array $validated): array
     {
         $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();

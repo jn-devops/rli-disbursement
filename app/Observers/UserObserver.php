@@ -29,6 +29,10 @@ class UserObserver
         if (null == $user->merchant_discount_rate) {
             $user->merchant_discount_rate = config('disbursement.user.merchant_discount_rate');
         }
+
+        if (null == $user->merchant_code) {
+            $user->merchant_code = (string) $user->id;
+        }
     }
 
     /**

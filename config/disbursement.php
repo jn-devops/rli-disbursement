@@ -47,5 +47,6 @@ return [
         'default' => [
             'city' => config('DEFAULT_MERCHANT_CITY', 'Manila')
         ],
+        'max_count' => config('MAX_MERCHANT_COUNT', 9)
     ],
 ];

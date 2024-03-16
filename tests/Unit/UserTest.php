@@ -20,6 +20,14 @@ class UserTest extends TestCase
         $this->seed(UserSeeder::class);
     }
 
+    public function test_user_has_maximum_entries(): void
+    {
+        $total = 10;
+        $count = User::all()->count();
+        User::factory($total - $count)->create();
+        $this->assertEquals($total, User::all()->count());
+    }
+
     public function test_user_attributes(): void
     {
         $user = User::factory()->create();
@@ -27,6 +35,12 @@ class UserTest extends TestCase
         $this->assertIsString($user->merchant_code);
         $this->assertIsString($user->merchant_name);
         $this->assertIsString($user->merchant_city);
+    }
+
+    public function test_user_default_attributes(): void
+    {
+        $user = User::factory()->create();
+        $this->assertIsString((string) $user->id, $user->merchant_code);
     }
 
     public function test_user_wallet_int(): void

@@ -102,8 +102,8 @@ watch (
                     Pay QR Code
                 </template>
                 <template #content>
-                    <div class="col-span-6 sm:col-span-4">
-                        <img :src="imageBytes" alt="qr-code"/>
+                    <div class="col-span-6 sm:col-span-4 mx-auto">
+                        <img :src="imageBytes" alt="qr-code" class="mx-auto"/>
                     </div>
                 </template>
                 <template #footer>

@@ -142,7 +142,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
 
     public function getMerchantCodeAttribute(): ?string
     {
-        return $this->getAttribute('meta')->get('merchant.code');
+        return $this->getAttribute('meta')->get('merchant.code') ?: (string) $this->id;
     }
 
     public function setMerchantCodeAttribute(?string $value): self
