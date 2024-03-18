@@ -163,9 +163,9 @@ class Transaction extends Resource
     {
         $institution = null;
         $bank_date = BankData::collectFromJsonFile('banks_list.json'); //TODO: put this in cache
-        $institution_code = Arr::get($this->getAttribute('meta'), 'sender.institutionCode');
-        if ($bank = Arr::get($bank_date, $institution_code))
-            $institution = $bank->name;
+        if ($institution_code = Arr::get($this->getAttribute('meta'), 'sender.institutionCode'))
+            if ($bank = Arr::get($bank_date, $institution_code))
+                $institution = $bank->name;
 
         return Str::upper($institution ?: $institution_code);
     }
@@ -178,7 +178,7 @@ class Transaction extends Resource
                 $account = $reference_code;
             }
             else {
-                $account = Arr::get($this->getAttribute('meta'), 'merchant_details.merchant_account');
+                $account = Arr::get($this->getAttribute('meta'), 'merchant_details.merchant_account', $account);
             }
         }
 
