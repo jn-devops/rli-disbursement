@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Actions;
 
-use App\Models\Product;
-
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use Database\Seeders\{ProductSeeder, UserSeeder};
 use App\Notifications\DisbursementNotification;

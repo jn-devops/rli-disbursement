@@ -37,6 +37,13 @@ class User extends Resource
     public static $tableStyle = 'tight';
 
     /**
+     * Indicates if the resource should be displayed in the sidebar.
+     *
+     * @var bool
+     */
+    public static $displayInNavigation = false;
+
+    /**
      * The columns that should be searched.
      *
      * @var array

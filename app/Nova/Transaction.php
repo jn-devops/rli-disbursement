@@ -18,7 +18,7 @@ class Transaction extends Resource
      *
      * @var class-string<\Bavix\Wallet\Models\Transaction>
      */
-    public static $model = \Bavix\Wallet\Models\Transaction::class;
+    public static string $model = \App\Models\Transaction::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.

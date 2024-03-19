@@ -5,13 +5,16 @@ namespace App\Actions;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use App\Events\DisbursementConfirmed;
-use Bavix\Wallet\Models\Transaction;
+use App\Models\Transaction;
 use Illuminate\Support\Arr;
 
 class ConfirmDisbursement
 {
     use AsAction;
 
+    /**
+     * @return array[]
+     */
     public function rules(): array
     {
         return [
@@ -19,6 +22,10 @@ class ConfirmDisbursement
         ];
     }
 
+    /**
+     * @param ActionRequest $request
+     * @return \Illuminate\Http\Response
+     */
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
         $validated = $request->validated();

@@ -31,6 +31,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 });
             });
         });
+
+        Nova::initialPath(function ($request) { return "/resources/users/{$request->user()->getKey()}";});
     }
 
     /**
@@ -71,7 +73,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
-            new \App\Nova\Dashboards\Main,
+//            new \App\Nova\Dashboards\Main,
         ];
     }
 

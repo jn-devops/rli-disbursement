@@ -5,8 +5,8 @@ namespace App\Notifications;
 use NotificationChannels\Webhook\{WebhookChannel, WebhookMessage};
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use Bavix\Wallet\Models\Transaction;
 use Illuminate\Bus\Queueable;
+use App\Models\Transaction;
 
 class DisbursementNotification extends Notification
 {

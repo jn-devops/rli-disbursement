@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\Channel;
-use Bavix\Wallet\Models\Transaction;
+use App\Models\Transaction;
 use Brick\Money\Money;
 
 class DisbursementConfirmed implements ShouldBroadcast
