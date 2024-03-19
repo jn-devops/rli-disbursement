@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
+use Laravel\Nova\Fields\Currency;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
@@ -41,7 +42,7 @@ class User extends Resource
      *
      * @var bool
      */
-    public static $displayInNavigation = false;
+    public static $displayInNavigation = true;
 
     /**
      * The columns that should be searched.
@@ -49,7 +50,7 @@ class User extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name', 'email',
+        'id', 'name', 'email', 'mobile', 'meta->merchant->name', 'meta->merchant->city',
     ];
 
     /**
@@ -77,18 +78,47 @@ class User extends Resource
 
             Text::make('Mobile')
                 ->sortable()
-                ->rules('required', 'max:10')
+                ->rules('required', 'max:11')
                 ->creationRules('unique:users,mobile')
                 ->updateRules('unique:users,mobile,{{resourceId}}'),
+
+            Text::make('Merchant Code')
+                ->hideFromIndex()
+                ->hideWhenUpdating()
+                ->sortable(),
+
+            Text::make('Merchant Name')
+                ->sortable(),
+
+            Text::make('Merchant City')
+                ->sortable(),
+
+//            Currency::make('Transaction Fee','TF')->asMinorUnits()->currency('PHP')
+//                ->hideFromIndex()
+//                ->hideWhenCreating()
+//                ->hideWhenUpdating(),
+
+//            Currency::make('Merchant Discount Rate','MDR')->currency('PHP')
+//                ->hideFromIndex()
+//                ->hideWhenCreating()
+//                ->hideWhenUpdating(),
 
             Password::make('Password')
                 ->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())
                 ->updateRules('nullable', Rules\Password::defaults()),
 
-            MorphOne::make('Wallet'),
-            MorphMany::make('Transactions'),
-            HasMany::make('Transfers'),
+            MorphOne::make('Wallet')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
+
+            MorphMany::make('Transactions')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
+
+            HasMany::make('Transfers')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
         ];
     }
 

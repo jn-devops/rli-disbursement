@@ -2,7 +2,12 @@
 
 namespace App\Providers;
 
+use App\Nova\User;
+use http\Client\Request;
+use Laravel\Nova\Menu\MenuItem;
+use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\NovaApplicationServiceProvider;
+use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Fields\DateTime;
 use Illuminate\Support\Carbon;
@@ -32,7 +37,24 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             });
         });
 
-        Nova::initialPath(function ($request) { return "/resources/users/{$request->user()->getKey()}";});
+        Nova::serving(function (ServingNova $event) {
+            /** @var \App\Models\User|null $user */
+            $user = $event->request->user();
+
+            if (is_null($user)) {
+                return;
+            }
+
+            Nova::initialPath("/resources/users/{$user->getKey()}");
+        });
+
+        Nova::mainMenu(function ($request) {
+            return [
+                MenuSection::make('Users', [
+                    MenuItem::resource(User::class)->name('Merchants'),
+                ])->icon('user')->collapsable(),
+            ];
+        });
     }
 
     /**
@@ -73,7 +95,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
-//            new \App\Nova\Dashboards\Main,
+            new \App\Nova\Dashboards\Main,
         ];
     }
 
