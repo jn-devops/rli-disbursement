@@ -136,7 +136,17 @@ class RequestDisbursementAction
     public function asController(ActionRequest $request): \Illuminate\Http\Response
     {
         $user = $request->user();
+        logger('RequestDisbursementAction@asController');
+        logger('$user->toArray()');
+        logger($user->toArray());
+        logger('$request->all()');
+        logger($request->all());
+        logger('$request->validated()');
+        logger($request->validated());
+
         $response = $this->disburse($user, $request->validated());
+        logger('response->toJson()');
+        logger($response->toJson());
 
         return response($response->toJson(), 200);
     }
