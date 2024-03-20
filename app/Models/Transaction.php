@@ -18,12 +18,12 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
         return Attribute::make(
             get: fn () => match(get_class($this->payable)) {
                 User::class => match($this->type) {
-                    self::TYPE_WITHDRAW => Arr::get($this->meta, 'details.settlement_rail', '-'),
+                    self::TYPE_WITHDRAW => Arr::get($this->meta, 'details.settlement_rail', Arr::get($this->meta, 'title', 'System')),
                     self::TYPE_DEPOSIT => Arr::get($this->meta, 'channel', '-')
                 },
                 Product::class => match($this->type) {
-                    self::TYPE_WITHDRAW => 'system',
-                    self::TYPE_DEPOSIT => '-'
+                    self::TYPE_WITHDRAW => '-',
+                    self::TYPE_DEPOSIT => Arr::get($this->meta, 'title', 'System')
                 },
             },
         );
