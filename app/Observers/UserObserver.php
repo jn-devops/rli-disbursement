@@ -18,10 +18,10 @@ class UserObserver
             $user->merchant_city = config('disbursement.merchant.default.city');
         }
         if (null == $user->tf) {
-            $user->tf = config('disbursement.user.transaction_fee');
+            $user->tf = config('disbursement.user.tf');
         }
         if (null == $user->mdr) {
-            $user->mdr = config('disbursement.user.merchant_discount_rate');
+            $user->mdr = config('disbursement.user.mdr');
         }
         if (null == $user->transaction_fee) {
             $user->transaction_fee = config('disbursement.user.transaction_fee');

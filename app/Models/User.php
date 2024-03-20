@@ -23,8 +23,6 @@ use App\Traits\HasMeta;
  * @property string $email
  * @property string $mobile
  * @property string $webhook
- * @property float  $transaction_fee
- * @property float  $merchant_discount_rate
  * @property int    $tf
  * @property int    $mdr
  * @property string $merchant_code
@@ -57,8 +55,6 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
         'mobile',
         'webhook',
         'password',
-        'transaction_fee',
-        'merchant_discount_rate',
         'tf',
         'mdr',
         'merchant_code',
@@ -93,7 +89,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_url', 'merchant_code', 'merchant_name', 'merchant_city'
+        'profile_photo_url', 'tf', 'mdr', 'merchant_code', 'merchant_name', 'merchant_city'
     ];
 
     static public function getSystem(): static

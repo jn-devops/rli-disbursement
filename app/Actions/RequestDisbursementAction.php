@@ -6,10 +6,10 @@ use Brick\Math\Exception\{MathException, NumberFormatException, RoundingNecessar
 use App\Data\{AmountData, DestinationAccountData, GatewayResponseData, RecipientData};
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Brick\Money\Exception\UnknownCurrencyException;
-use App\Classes\{Address, Gateway, ServiceFee};
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Support\Facades\Http;
+use App\Classes\{Address, Gateway};
 use Illuminate\Validation\Rule;
 use App\Models\{Product, User};
 use Bavix\Wallet\Objects\Cart;
@@ -58,8 +58,6 @@ class RequestDisbursementAction
             );
 
         $credits = Money::of(Arr::get($validated, 'amount'), 'PHP');
-//        $serviceFee = (new ServiceFee($user))->compute($credits);
-//        $minor_amount = $serviceFee->inclusive()->getMinorAmount()->toInt();
         $meta = [
             'operationId' => $response->json('transaction_id'),
             'details' => $payload

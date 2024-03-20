@@ -17,8 +17,8 @@ class VoucherTest extends TestCase
     {
         $user = User::factory()->create();
         $meta = [
-            'transaction_fee' => 15,
-            'merchant_discount_rate' => 1.5/100
+            'tf' => 15,
+            'mdr' => 1
         ];
         $code = tap(Vouchers::withMetadata($meta)->create(), function ($voucher) {
 

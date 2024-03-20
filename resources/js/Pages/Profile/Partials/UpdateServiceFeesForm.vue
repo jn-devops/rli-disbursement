@@ -21,8 +21,8 @@ let PHPeso = new Intl.NumberFormat('en-US', {
 
 let Percent = new Intl.NumberFormat('en-US', {
     style: 'percent',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
 });
 
 const form = useForm({
@@ -66,7 +66,7 @@ const update = () => {
                 <InputLabel for="transaction_fee" value="Transaction Fee" />
                 <TextInput
                     id="transaction_fee"
-                    :value="PHPeso.format(user.transaction_fee/100)"
+                    :value="PHPeso.format(user.tf/100)"
                     type="text"
                     class="mt-1 block w-full"
                     readonly
@@ -76,7 +76,7 @@ const update = () => {
                 <InputLabel for="merchant_discount_rate" value="Merchant Discount Rate" />
                 <TextInput
                     id="merchant_discount_rate"
-                    :value="Percent.format(user.merchant_discount_rate)"
+                    :value="Percent.format(user.mdr/100)"
                     type="text"
                     class="mt-1 block w-full"
                     readonly

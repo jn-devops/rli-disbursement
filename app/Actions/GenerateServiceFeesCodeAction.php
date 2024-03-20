@@ -6,7 +6,6 @@ use FrittenKeeZ\Vouchers\Facades\Vouchers;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Console\Command;
 use Carbon\CarbonInterval;
-use Brick\Money\Money;
 
 class GenerateServiceFeesCodeAction
 {
@@ -18,18 +17,19 @@ class GenerateServiceFeesCodeAction
 
     /**
      * @param int $transaction_fee
-     * @param float $merchant_discount_rate
+     * @param int $merchant_discount_rate
      * @return string
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Math\Exception\NumberFormatException
      * @throws \Brick\Math\Exception\RoundingNecessaryException
      * @throws \Brick\Money\Exception\UnknownCurrencyException
      */
-    public function handle(int $transaction_fee, float $merchant_discount_rate): string
+    public function handle(int $transaction_fee, int $merchant_discount_rate): string
     {
-        $tf = Money::of($transaction_fee, 'PHP')->getMinorAmount()->toInt();
-        $mdr = $merchant_discount_rate/100;
-        $meta = ['transaction_fee' => $tf, 'merchant_discount_rate' => $mdr];
+        $tf = $transaction_fee;
+        $mdr = $merchant_discount_rate;
+//        $meta = ['transaction_fee' => $tf, 'merchant_discount_rate' => $mdr];
+        $meta = ['tf' => $tf, 'mdr' => $mdr];
 
         $voucher = Vouchers::withMask('****')
             ->withMetadata($meta)

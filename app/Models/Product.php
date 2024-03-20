@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
  * @property int    $id
  * @property string $code
  * @property string $name
- * @property Price    $price
+ * @property Price  $price
  *
  * @method   int    getKey()
  */

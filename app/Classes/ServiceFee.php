@@ -7,6 +7,7 @@ use App\Models\Product;
 use Brick\Money\Money;
 use App\Models\User;
 
+/** @deprecated  */
 class ServiceFee
 {
 

@@ -4,8 +4,6 @@ namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use Database\Seeders\UserSeeder;
-use App\Classes\ServiceFee;
-use Brick\Money\Money;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -94,16 +92,13 @@ class UserTest extends TestCase
         $this->assertEquals(1000 * 1000 * 1000, $system->balanceFloat);
     }
 
-    public function test_transaction_fee(): void
+    public function test_default_transaction_fee(): void
     {
         $user = User::factory()->create();
-        $credits = Money::of(100, 'PHP');
-        $this->assertEquals(15 * 100, config('disbursement.user.transaction_fee'));
-        $this->assertEquals(config('disbursement.user.transaction_fee'), $user->transaction_fee);
-        $this->assertEquals(1.5 / 100, config('disbursement.user.merchant_discount_rate'));
-        $this->assertEquals(config('disbursement.user.merchant_discount_rate'), $user->merchant_discount_rate);
-        $service_fee = (new ServiceFee($user))->compute($credits);
-        $this->assertEquals(116.5, $service_fee->inclusive()->getAmount()->toFloat());
+        $this->assertEquals(15 * 100, config('disbursement.user.tf'));
+        $this->assertEquals(config('disbursement.user.transaction_fee'), $user->tf);
+        $this->assertEquals(1, config('disbursement.user.mdr'));
+        $this->assertEquals(config('disbursement.user.mdr'), $user->mdr);
     }
 
 }

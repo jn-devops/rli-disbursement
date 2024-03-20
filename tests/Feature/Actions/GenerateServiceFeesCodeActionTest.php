@@ -16,13 +16,11 @@ class GenerateServiceFeesCodeActionTest extends TestCase
 
     public function test_generate_service_fees_action_works(): void
     {
-        $transaction_fee = $this->faker->numberBetween(12, 18);
-        $merchant_discount_rate = $this->faker->numberBetween(10, 20)/10;
-        $code = GenerateServiceFeesCodeAction::run($transaction_fee, $merchant_discount_rate);
+        $tf = $this->faker->numberBetween(12, 18) * 100;
+        $mdr = $this->faker->numberBetween(1, 5);
+        $code = GenerateServiceFeesCodeAction::run($tf, $mdr);
         $voucher = Voucher::where('code', $code)->first();
-        $tf = Money::of($transaction_fee, 'PHP')->getMinorAmount()->toInt();
-        $mdr = $merchant_discount_rate/100;
-        $this->assertEquals(['transaction_fee' => $tf, 'merchant_discount_rate' => $mdr], $voucher->metadata);
+        $this->assertEquals(['tf' => $tf, 'mdr' => $mdr], $voucher->metadata);
     }
 
     public function test_generate_service_fees_command_works(): void
