@@ -20,7 +20,8 @@ class SendDisbursementFeedbackAction
     {
         $user = $transaction->payable;
         if ($user instanceof User)
-            $user->notify(new DisbursementNotification($transaction));
+            if (filter_var($user->webhook, FILTER_VALIDATE_URL))
+                $user->notify(new DisbursementNotification($transaction));
     }
 
     /**
