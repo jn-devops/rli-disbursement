@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Data\BankData;
 use App\Models\User;
 
+
 class Transaction extends Resource
 {
     /**
@@ -59,7 +60,9 @@ class Transaction extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            ID::make()->sortable(),
+            ID::make('#', __('ID'), function() {
+                return str_pad($this->id, 8, '0', STR_PAD_LEFT);
+            })->sortable(),
             Text::make('Type')->sortable(),
             MorphTo::make('Payable')->hideFromIndex(),
             Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
@@ -68,35 +71,10 @@ class Transaction extends Resource
             Text::make('Account')->displayUsing(function ($name) {
                 return is_numeric($name) ? str_pad($name, 5, "0", STR_PAD_LEFT) : $name;
             })->sortable(),
-//            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
-//            Text::make('Via', function ($attribute) use ($request) {
-//                return $this->getAttribute('via');
-//            })->sortable(),
-//            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
-//            Text::make('Account Holder', function ($attribute) use ($request) {
-//                $holder = match($this->getAttribute('type')) {
-//                    'withdraw' => $request->json('meta->details->destination_account->bank_code'),
-//                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.name'),
-//                };
-//
-//                return Str::title($holder);
-//            })->sortable(),
-//            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
-//            Text::make('Account Id', function ($attribute) use ($request) {
-//                return match($this->getAttribute('type')) {
-//                    'withdraw' => $request->json('meta->details->destination_account->account_number'),
-//                    'deposit' =>  $this->getInstitution($request) . ' - ' . $this->getAccount($request),
-//                };
-//            })->sortable(),
-//            Currency::make('Sent', function($attribute) use ($request) {
-//                return $request->json('meta->details->amount');
-//            })->asMinorUnits()->currency('PHP')->sortable(),
             Text::make('OperationId', 'meta->operationId')->sortable()->hideFromIndex(),
             Boolean::make('Confirmed')->sortable(),
             DateTime::make('Created', 'created_at')->sortable()->hideFromIndex(),
             DateTime::make('Updated', 'updated_at')->sortable(),
-//            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->hideFromIndex(),
-//            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
         ];
     }
 
@@ -161,29 +139,29 @@ class Transaction extends Resource
         return false;
     }
 
-    protected function getInstitution(NovaRequest $request): string
-    {
-        $institution = null;
-        $bank_date = BankData::collectFromJsonFile('banks_list.json'); //TODO: put this in cache
-        if ($institution_code = Arr::get($this->getAttribute('meta'), 'sender.institutionCode'))
-            if ($bank = Arr::get($bank_date, $institution_code))
-                $institution = $bank->name;
-
-        return Str::upper($institution ?: $institution_code);
-    }
-
-    protected function getAccount(NovaRequest $request): string
-    {
-        $account = '-';
-        if (($user = $this->payable) instanceof User) {
-            if ($user->mobile === $reference_code = Arr::get($this->getAttribute('meta'), 'referenceCode')) {
-                $account = $reference_code;
-            }
-            else {
-                $account = Arr::get($this->getAttribute('meta'), 'merchant_details.merchant_account', $account);
-            }
-        }
-
-        return $account;
-    }
+//    protected function getInstitution(NovaRequest $request): string
+//    {
+//        $institution = null;
+//        $bank_date = BankData::collectFromJsonFile('banks_list.json'); //TODO: put this in cache
+//        if ($institution_code = Arr::get($this->getAttribute('meta'), 'sender.institutionCode'))
+//            if ($bank = Arr::get($bank_date, $institution_code))
+//                $institution = $bank->name;
+//
+//        return Str::upper($institution ?: $institution_code);
+//    }
+//
+//    protected function getAccount(NovaRequest $request): string
+//    {
+//        $account = '-';
+//        if (($user = $this->payable) instanceof User) {
+//            if ($user->mobile === $reference_code = Arr::get($this->getAttribute('meta'), 'referenceCode')) {
+//                $account = $reference_code;
+//            }
+//            else {
+//                $account = Arr::get($this->getAttribute('meta'), 'merchant_details.merchant_account', $account);
+//            }
+//        }
+//
+//        return $account;
+//    }
 }

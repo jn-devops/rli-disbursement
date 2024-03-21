@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Arr;
+use App\Data\BankData;
 
 /**
  * Class Transaction
@@ -15,6 +16,9 @@ use Illuminate\Support\Arr;
  */
 class Transaction extends \Bavix\Wallet\Models\Transaction
 {
+    /**
+     * @return Attribute
+     */
     protected function via(): Attribute
     {
         return Attribute::make(
@@ -31,12 +35,15 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
         );
     }
 
+    /**
+     * @return Attribute
+     */
     protected function institution(): Attribute
     {
         return Attribute::make(
             get: fn () => match(get_class($this->payable)) {
                 User::class => match($this->type) {
-                    self::TYPE_WITHDRAW => Arr::get($this->meta, 'details.destination_account.bank_code',  $this->payable instanceof User ? $this->payable->merchant_name : 'XXX'),
+                    self::TYPE_WITHDRAW => $this->getBankName(Arr::get($this->meta, 'details.destination_account.bank_code',  $this->payable instanceof User ? $this->payable->merchant_name : 'XXX')),
                     self::TYPE_DEPOSIT => Arr::get($this->meta, 'sender.name',  $this->payable instanceof User ? $this->payable->merchant_name : 'YYY')
                 },
                 Product::class => match($this->type) {
@@ -47,6 +54,9 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
         );
     }
 
+    /**
+     * @return Attribute
+     */
     protected function account(): Attribute
     {
         return Attribute::make(
@@ -61,5 +71,18 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
                 },
             },
         );
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function getBankName(string $value): string
+    {
+        $bank_data = BankData::collectFromJsonFile('banks_list.json');
+        if ($bank = Arr::get($bank_data, $value))
+            return $bank->name;
+
+        return $value;
     }
 }

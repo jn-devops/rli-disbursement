@@ -2,7 +2,7 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\{Boolean, Currency, DateTime, ID, MorphTo, Text};
+use Laravel\Nova\Fields\{Currency, DateTime, MorphTo, Text};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Illuminate\Http\Request;
@@ -55,12 +55,10 @@ class Wallet extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            ID::make()->sortable(),
             MorphTo::make('Holder'),
             Text::make('Name')->sortable(),
             Currency::make('Balance')->asMinorUnits()->currency('PHP')->sortable(),
-            DateTime::make('Created', 'created_at')->withFriendlyDate()->sortable()->showOnDetail(),
-            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->sortable(),
+            DateTime::make('Updated', 'updated_at')->withFriendlyDate()->hideFromIndex()->sortable(),
         ];
     }
 
