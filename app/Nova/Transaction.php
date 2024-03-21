@@ -66,7 +66,7 @@ class Transaction extends Resource
             Text::make('Via')->sortable(),
             Text::make('Institution')->sortable(),
             Text::make('Account')->displayUsing(function ($name) {
-                return str_pad($name, 5, "0", STR_PAD_LEFT);
+                return is_numeric($name) ? str_pad($name, 5, "0", STR_PAD_LEFT) : $name;
             })->sortable(),
 //            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
 //            Text::make('Via', function ($attribute) use ($request) {
