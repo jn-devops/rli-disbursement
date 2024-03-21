@@ -64,19 +64,20 @@ class Transaction extends Resource
             MorphTo::make('Payable')->hideFromIndex(),
             Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
             Text::make('Via')->sortable(),
+            Text::make('Account Holder')->sortable(),
 //            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
 //            Text::make('Via', function ($attribute) use ($request) {
 //                return $this->getAttribute('via');
 //            })->sortable(),
 //            Text::make('Bank', 'meta->details->destination_account->bank_code')->sortable(),
-            Text::make('Account Holder', function ($attribute) use ($request) {
-                $holder = match($this->getAttribute('type')) {
-                    'withdraw' => $request->json('meta->details->destination_account->bank_code'),
-                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.name'),
-                };
-
-                return Str::title($holder);
-            })->sortable(),
+//            Text::make('Account Holder', function ($attribute) use ($request) {
+//                $holder = match($this->getAttribute('type')) {
+//                    'withdraw' => $request->json('meta->details->destination_account->bank_code'),
+//                    'deposit' =>  Arr::get($this->getAttribute('meta'), 'sender.name'),
+//                };
+//
+//                return Str::title($holder);
+//            })->sortable(),
 //            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
             Text::make('Account Id', function ($attribute) use ($request) {
                 return match($this->getAttribute('type')) {
