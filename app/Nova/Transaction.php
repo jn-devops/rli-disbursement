@@ -64,7 +64,10 @@ class Transaction extends Resource
             MorphTo::make('Payable')->hideFromIndex(),
             Currency::make('Amount')->asMinorUnits()->currency('PHP')->sortable(),
             Text::make('Via')->sortable(),
-            Text::make('Account Holder')->sortable(),
+            Text::make('Institution')->sortable(),
+            Text::make('Account')->displayUsing(function ($name) {
+                return str_pad($name, 5, "0", STR_PAD_LEFT);
+            })->sortable(),
 //            Text::make('Via', 'meta->details->settlement_rail')->sortable(),
 //            Text::make('Via', function ($attribute) use ($request) {
 //                return $this->getAttribute('via');
@@ -79,12 +82,12 @@ class Transaction extends Resource
 //                return Str::title($holder);
 //            })->sortable(),
 //            Text::make('Account #', 'meta->details->destination_account->account_number')->sortable(),
-            Text::make('Account Id', function ($attribute) use ($request) {
-                return match($this->getAttribute('type')) {
-                    'withdraw' => $request->json('meta->details->destination_account->account_number'),
-                    'deposit' =>  $this->getInstitution($request) . ' - ' . $this->getAccount($request),
-                };
-            })->sortable(),
+//            Text::make('Account Id', function ($attribute) use ($request) {
+//                return match($this->getAttribute('type')) {
+//                    'withdraw' => $request->json('meta->details->destination_account->account_number'),
+//                    'deposit' =>  $this->getInstitution($request) . ' - ' . $this->getAccount($request),
+//                };
+//            })->sortable(),
 //            Currency::make('Sent', function($attribute) use ($request) {
 //                return $request->json('meta->details->amount');
 //            })->asMinorUnits()->currency('PHP')->sortable(),

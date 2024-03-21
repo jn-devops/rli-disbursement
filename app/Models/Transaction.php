@@ -9,7 +9,8 @@ use Illuminate\Support\Arr;
  * Class Transaction
  *
  * @property string $via
- * @property string $accountHolder
+ * @property string $institution
+ * @property string $account
  *
  */
 class Transaction extends \Bavix\Wallet\Models\Transaction
@@ -30,7 +31,7 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
         );
     }
 
-    protected function accountHolder(): Attribute
+    protected function institution(): Attribute
     {
         return Attribute::make(
             get: fn () => match(get_class($this->payable)) {
@@ -41,6 +42,22 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
                 Product::class => match($this->type) {
                     self::TYPE_WITHDRAW => 'System',
                     self::TYPE_DEPOSIT => $this->payable instanceof User ? $this->payable->merchant_name : 'ZZZ'
+                },
+            },
+        );
+    }
+
+    protected function account(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match(get_class($this->payable)) {
+                User::class => match($this->type) {
+                    self::TYPE_WITHDRAW => Arr::get($this->meta, 'details.destination_account.account_number',  $this->payable instanceof User ? $this->payable->merchant_name : 'XXX'),
+                    self::TYPE_DEPOSIT => Arr::get($this->meta, 'sender.name',  $this->payable instanceof User ? $this->payable->merchant_code : 'YYY')
+                },
+                Product::class => match($this->type) {
+                    self::TYPE_WITHDRAW => 'System',
+                    self::TYPE_DEPOSIT => $this->payable instanceof User ? $this->payable->merchant_code : 'ZZZ'
                 },
             },
         );
