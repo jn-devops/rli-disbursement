@@ -2,8 +2,8 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\{DisburseCredits, TransferCredits};
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Nova\Actions\TransferCredits;
 use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\Password;
@@ -157,6 +157,10 @@ class User extends Resource
                 ->confirmText('Are you sure you want to transfer credits?')
                 ->confirmButtonText('Transfer')
                 ->cancelButtonText("Don't transfer"),
+            (new DisburseCredits())
+                ->confirmText('Are you sure you want to disburse credits?')
+                ->confirmButtonText('Disburse')
+                ->cancelButtonText("Don't disburse"),
         ];
     }
 }

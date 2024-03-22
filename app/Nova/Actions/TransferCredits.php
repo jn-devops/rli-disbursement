@@ -58,7 +58,7 @@ class TransferCredits extends DestructiveAction
         $inc = Money::of(1000, 'PHP');
         return [
             Currency::make('Amount')
-                ->min($min->getAmount()->toInt())->max($max->getAmount()->toInt())->step(1000)//TODO: put this in config
+                ->min($min->getAmount()->toInt())->max($max->getAmount()->toInt())->step($inc->getAmount()->toInt())//TODO: put this in config
                 ->default(1000)
                 ->help('min of ' . $min->formatTo('en_US') . ' to max of ' . $max->formatTo('en_US') . ' in increments of ' . $inc->formatTo('en_US')),
         ];
