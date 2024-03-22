@@ -43,12 +43,18 @@ return [
         'initial_deposit' => env('INITIAL_DEPOSIT', 1000 * 1000 * 1000),
     ],
     'nova' => [
-        'whitelist' => env('NOVA_WHITELIST', '*')
+        'whitelist' => env('NOVA_WHITELIST', '*'),
     ],
     'merchant' => [
         'default' => [
-            'city' => config('DEFAULT_MERCHANT_CITY', 'Manila')
+            'city' => env('DEFAULT_MERCHANT_CITY', 'Manila')
         ],
-        'max_count' => config('MAX_MERCHANT_COUNT', 9)
+        'max_count' => env('MAX_MERCHANT_COUNT', 9)
+    ],
+    'bank' => [
+        'default' => [
+            'code' => env('DEFAULT_BANK_CODE', 'GXCHPHM2XXX'),
+            'settlement_rail' => env('DEFAULT_SETTLEMENT_RAIL', 'INSTAPAY'),
+        ],
     ],
 ];
