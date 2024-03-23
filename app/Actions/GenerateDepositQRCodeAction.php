@@ -19,6 +19,9 @@ class GenerateDepositQRCodeAction
 {
     use AsAction;
 
+    const AMOUNT_FIELD = 'amount';
+    const ACCOUNT_FIELD = 'account';
+
     public function __construct(protected Gateway $gateway)
     {
     }
@@ -56,11 +59,11 @@ class GenerateDepositQRCodeAction
      * @throws RoundingNecessaryException
      * @throws NumberFormatException|MathException
      */
-    public function handle(User $user, int $amount, string $mobile = null): string
+    public function handle(User $user, int $amount = null, string $account = null): string
     {
-        $credits = Money::of($amount, 'PHP');
+        $credits = Money::of($amount ?: 0, 'PHP');
 
-        return $this->getQRCode($user, $credits, $mobile);
+        return $this->getQRCode($user, $credits, $account);
     }
 
     /**
@@ -69,8 +72,8 @@ class GenerateDepositQRCodeAction
     public function rules(): array
     {
         return [
-            'amount' => ['nullable', 'integer', 'min:50'],
-            'account' => ['nullable', 'numeric', 'starts_with:0'],
+            self::AMOUNT_FIELD => ['nullable', 'integer', 'min:50'],
+            self::ACCOUNT_FIELD => ['nullable', 'numeric', 'starts_with:0', 'max_digits:11'],
         ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\{DisburseCredits, TransferCredits};
+use App\Nova\Actions\{DisburseCredits, RequestPayment, TopupAccount, TransferCredits};
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Gravatar;
@@ -161,6 +161,14 @@ class User extends Resource
                 ->confirmText('Are you sure you want to disburse credits?')
                 ->confirmButtonText('Disburse')
                 ->cancelButtonText("Don't disburse"),
+            (new TopupAccount())
+                ->confirmText('Are you sure you want to topup account?')
+                ->confirmButtonText('Topup')
+                ->cancelButtonText("Don't topup"),
+            (new RequestPayment())
+                ->confirmText('Are you sure you want to request payment?')
+                ->confirmButtonText('Request Payment')
+                ->cancelButtonText("Don't request payment"),
         ];
     }
 }
