@@ -52,14 +52,14 @@ const logout = () => {
                                     Welcome
                                 </NavLink>
                             </div>
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('outgoing')" :active="route().current('outgoing')">
-                                    Outgoing
-                                </NavLink>
-                            </div>
+<!--                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">-->
+<!--                                <NavLink :href="route('outgoing')" :active="route().current('outgoing')">-->
+<!--                                    Outgoing-->
+<!--                                </NavLink>-->
+<!--                            </div>-->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('nova.pages.home')" :active="route().current('nova.pages.home')">
-                                    Nova
+                                    Accounts
                                 </NavLink>
                             </div>
                         </div>

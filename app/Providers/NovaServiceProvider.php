@@ -50,8 +50,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         Nova::mainMenu(function ($request) {
             return [
-                MenuSection::make('Users', [
-                    MenuItem::resource(User::class)->name('Merchants'),
+                MenuSection::make(config('app.name'), [
+                    MenuItem::resource(User::class)->name('Accounts'),
+                    MenuItem::make('Profile')->path('../user/profile'),
+                    MenuItem::make('API Tokens')->path('../user/api-tokens'),
+                    MenuItem::make('Outgoing')->path('../outgoing')
                 ])->icon('user')->collapsable(),
             ];
         });
