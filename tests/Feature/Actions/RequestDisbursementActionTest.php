@@ -57,9 +57,10 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertFalse($transaction->confirmed);
 
         $tf_product = Product::where('code', 'transaction_fee')->first();
+        $tf = $tf_product->getAmountProduct($user);
         $mdr_product = Product::where('code', 'merchant_discount_rate')->first();
-        $tf = $tf_product->price->getMinorAmount()->toInt();
-        $mdr = $mdr_product->price->getMinorAmount()->toInt();
+        $mdr = $mdr_product->getAmountProduct($user);
+
         $expectedServiceFee = Money::ofMinor($tf + $mdr * $credits->getAmount()->toInt(), 'PHP');
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
     }
@@ -92,10 +93,13 @@ class RequestDisbursementActionTest extends TestCase
         //since it is not confirmed, the use balance should be deducted of the service fee only
         $this->assertFalse($transaction->confirmed);
 
-        $tf = config('disbursement.user.tf');
-        $this->assertEquals($tf, $user->tf);
-        $mdr = config('disbursement.user.mdr');
-        $this->assertEquals($mdr, $user->mdr);
+//        $tf = config('disbursement.user.tf');
+        $tf = Product::where('code', 'transaction_fee')->first()->getAmountProduct($user);
+        $this->assertEquals(null, $user->tf);
+//        $mdr = config('disbursement.user.mdr');
+        $mdr = Product::where('code', 'merchant_discount_rate')->first()->getAmountProduct($user);
+        $this->assertEquals(null, $user->mdr);
+
         $expectedServiceFee = Money::ofMinor($tf + $mdr * $credits->getAmount()->toInt(), 'PHP');
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
     }
@@ -105,7 +109,10 @@ class RequestDisbursementActionTest extends TestCase
     {
         Notification::fake();
         $initialAmountFloat = 1000;
-        $user = tap(User::factory()->create(), function ($user) use ($initialAmountFloat) {
+        $user = tap(User::factory()->create([
+            'tf' => 20 * 100,
+            'mdr' => 0
+        ]), function ($user) use ($initialAmountFloat) {
             $user->depositFloat($initialAmountFloat);
         });
         $credits = Money::of(100, 'PHP');
@@ -134,10 +141,16 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertEquals($payload['amount'], Money::ofMinor($details['amount']['num'], $details['amount']['cur'])->getAmount()->toInt());
 
 //        $expectedServiceFee = (new ServiceFee($user))->amount($credits);
-        $tf = config('disbursement.user.tf');
-        $this->assertEquals($tf, $user->tf);
-        $mdr = config('disbursement.user.mdr');
-        $this->assertEquals($mdr, $user->mdr);
+//        $tf = config('disbursement.user.tf');
+        $this->assertEquals(2000, $user->tf);
+//        $mdr = config('disbursement.user.mdr');
+        $this->assertEquals(null, $user->mdr);
+        $tf = Product::where('code', 'transaction_fee')->first()->getAmountProduct($user);
+        $mdr = Product::where('code', 'merchant_discount_rate')->first()->getAmountProduct($user);
+
+        $this->assertEquals(2000, $tf);
+        $this->assertEquals(0, $mdr);
+
         $expectedServiceFee = Money::ofMinor($tf + $mdr * $credits->getAmount()->toInt(), 'PHP');
 
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);

@@ -72,6 +72,26 @@ class ProductTest extends TestCase
     }
 
     /** @test */
+    public function product_price_can_be_overridden_by_user_with_zero_mdr(): void
+    {
+        $user = User::factory()->create([
+            'tf' => 20 * 100,
+            'mdr' => 0
+        ]);
+        $this->assertEquals(20 * 100, $user->tf);
+        $this->assertEquals(0, $user->mdr);
+
+        $codes = ['transaction_fee', 'merchant_discount_rate'];
+        foreach ($codes as $code) {
+            $product = Product::where('code', $code)->first();
+            match ($product->code) {
+                'transaction_fee' => $this->assertEquals(20 * 100, $product->getAmountProduct($user)),
+                'merchant_discount_rate' => $this->assertEquals(0, $product->getAmountProduct($user)),
+            };
+        }
+    }
+
+    /** @test */
     public function product_can_be_bought(): void
     {
         $user = User::factory()->create();

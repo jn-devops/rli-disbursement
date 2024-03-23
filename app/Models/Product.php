@@ -36,8 +36,8 @@ class Product extends Model implements ProductInterface
         return
             $customer instanceof User
                 ? match ($this->code) {
-                    'transaction_fee' => $customer->tf ?: $this->price->base()->getMinorAmount()->toFloat(),
-                    'merchant_discount_rate' => ($customer->mdr ?: $this->price->base()->getMinorAmount()->toFloat()) * $this->qty }
+                    'transaction_fee' => isset($customer->tf) ? $customer->tf : $this->price->base()->getMinorAmount()->toFloat(),
+                    'merchant_discount_rate' => (isset($customer->mdr) ? $customer->mdr : $this->price->base()->getMinorAmount()->toFloat()) * $this->qty }
                 : $this->price->base()->getMinorAmount()->toFloat()
             ;
     }
