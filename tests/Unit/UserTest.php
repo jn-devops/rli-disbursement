@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
+use Illuminate\Validation\ValidationException;
+use App\Actions\Fortify\CreateNewUser;
 use Database\Seeders\UserSeeder;
 use App\Models\User;
 use Tests\TestCase;
@@ -16,14 +18,6 @@ class UserTest extends TestCase
     {
         parent::setUp();
         $this->seed(UserSeeder::class);
-    }
-
-    public function test_user_has_maximum_entries(): void
-    {
-        $total = 10;
-        $count = User::all()->count();
-        User::factory($total - $count)->create();
-        $this->assertEquals($total, User::all()->count());
     }
 
     public function test_user_attributes(): void
@@ -103,4 +97,29 @@ class UserTest extends TestCase
         $this->assertEquals(null, $user->mdr);
     }
 
+    public function test_user_has_maximum_entries(): void
+    {
+        $max_users = 9;
+        $count = User::all()->count();
+        $action = app(CreateNewUser::class);
+        for ($i = $count; $i < $max_users; $i++) {
+            $user = $action->create([
+                'name' => $this->faker->name(),
+                'email' => $this->faker->email(),
+                'mobile' => $this->faker->phoneNumber(),
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+            $this->assertEquals((string) ($i+1), $user->merchant_code);
+        }
+        $this->assertEquals($max_users, User::all()->count());
+        $this->expectException(ValidationException::class);
+        $action->create([
+            'name' => $this->faker->name(),
+            'email' => $this->faker->email(),
+            'mobile' => $this->faker->phoneNumber(),
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+    }
 }

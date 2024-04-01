@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Actions\GetNextMerchantCodeAction;
 use App\Models\User;
 
 class UserObserver
@@ -23,15 +24,9 @@ class UserObserver
 //        if (null == $user->mdr) {
 //            $user->mdr = config('disbursement.user.mdr');
 //        }
-        if (null == $user->transaction_fee) {
-            $user->transaction_fee = config('disbursement.user.transaction_fee');
-        }
-        if (null == $user->merchant_discount_rate) {
-            $user->merchant_discount_rate = config('disbursement.user.merchant_discount_rate');
-        }
 
         if (null == $user->merchant_code) {
-            $user->merchant_code = (string) $user->id;
+            $user->merchant_code = (string) GetNextMerchantCodeAction::run();
         }
     }
 

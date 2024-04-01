@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Nova\User;
-use http\Client\Request;
-use Laravel\Nova\Menu\MenuItem;
-use Laravel\Nova\Menu\MenuSection;
+use Laravel\Nova\Menu\{MenuItem, MenuSection};
 use Laravel\Nova\NovaApplicationServiceProvider;
 use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Gate;
@@ -13,6 +10,7 @@ use Laravel\Nova\Fields\DateTime;
 use Illuminate\Support\Carbon;
 use App\Classes\NovaWhitelist;
 use Laravel\Nova\Nova;
+use App\Nova\User;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
