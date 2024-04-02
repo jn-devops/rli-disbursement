@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Actions;
 
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Testing\{RefreshDatabase, WithFaker};
 use Database\Seeders\{ProductSeeder, UserSeeder};
 use App\Notifications\DisbursementNotification;
+use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Illuminate\Support\Facades\Notification;
 use App\Actions\RequestDisbursementAction;
 use Bavix\Wallet\Models\Transaction;
@@ -63,6 +65,90 @@ class RequestDisbursementActionTest extends TestCase
 
         $expectedServiceFee = Money::ofMinor($tf + $mdr * $credits->getAmount()->toInt(), 'PHP');
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
+    }
+
+    /** @test */
+    public function request_disbursement_action_exception_on_wallet_balance(): void
+    {
+        $initialAmountFloat = 100;
+        $creditAmountFloat = $initialAmountFloat + $this->faker->numberBetween(1,100);
+        $tf = 0;
+        $mdr = 0;
+        $user = tap(User::factory()->createQuietly(['meta->service->tf' => $tf, 'mdr' => $mdr]), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $this->assertEquals(0, $user->tf);
+        $this->assertEquals(0, $user->mdr);
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $credits = Money::of($creditAmountFloat, 'PHP');
+        try {
+            app(RequestDisbursementAction::class)->run($user, [
+                'reference' => $this->faker->uuid(),
+                'bank' => 'CUOBPHM2XXX',
+                'account_number' => '039000000052',
+                'via' => 'INSTAPAY',
+                'amount' => $credits->getAmount()->toInt()
+            ]);
+        }
+        catch (InsufficientFunds $e) {
+            $this->assertEquals($initialAmountFloat, $user->fresh()->balanceFloat);
+        }
+    }
+
+    /** @test */
+    public function request_disbursement_action_exception_on_tf(): void
+    {
+        $initialAmountFloat = 100;
+        $creditAmountFloat = $initialAmountFloat;
+        $tf = 15;
+        $mdr = 0;
+        $user = tap(User::factory()->createQuietly(['meta->service->tf' => $tf, 'mdr' => $mdr]), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $this->assertEquals(15, $user->tf);
+        $this->assertEquals(0, $user->mdr);
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $credits = Money::of($creditAmountFloat, 'PHP');
+        try {
+            app(RequestDisbursementAction::class)->run($user, [
+                'reference' => $this->faker->uuid(),
+                'bank' => 'CUOBPHM2XXX',
+                'account_number' => '039000000052',
+                'via' => 'INSTAPAY',
+                'amount' => $credits->getAmount()->toInt()
+            ]);
+        }
+        catch (InsufficientFunds $e) {
+            $this->assertEquals($initialAmountFloat - ($tf/100), $user->fresh()->balanceFloat);
+        }
+    }
+
+    /** @test */
+    public function request_disbursement_action_exception_on_mdr(): void
+    {
+        $initialAmountFloat = 100;
+        $creditAmountFloat = $initialAmountFloat;
+        $tf = 0;
+        $mdr = 1;
+        $user = tap(User::factory()->createQuietly(['meta->service->tf' => $tf, 'mdr' => $mdr]), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $this->assertEquals(0, $user->tf);
+        $this->assertEquals(1, $user->mdr);
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $credits = Money::of($creditAmountFloat, 'PHP');
+        try {
+            app(RequestDisbursementAction::class)->run($user, [
+                'reference' => $this->faker->uuid(),
+                'bank' => 'CUOBPHM2XXX',
+                'account_number' => '039000000052',
+                'via' => 'INSTAPAY',
+                'amount' => $credits->getAmount()->toInt()
+            ]);
+        }
+        catch (InsufficientFunds $e) {
+            $this->assertEquals($initialAmountFloat - (($mdr/100)*$creditAmountFloat), $user->fresh()->balanceFloat);
+        }
     }
 
     /** @test */
