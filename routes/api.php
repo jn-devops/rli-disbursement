@@ -32,20 +32,20 @@ Route::group(['middleware' => 'firewall.middleware.blacklist'], function ()
             ->middleware(['auth:sanctum'])
             ->name('disbursement-payment');
 
-        Route::post('/confirm-disbursement', \App\Actions\ConfirmDisbursement::class)
-//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
-            ->middleware(['auth:sanctum'])
-            ->name('confirm-disbursement');
-
-        Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
-//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
-            ->name('confirm-deposit');
-
-        Route::get('/banks', \App\Actions\GetBankData::class)
-            ->name('api-banks');
-
-        Route::middleware('auth:sanctum')->get('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class);
     });
 });
 
 
+Route::post('/confirm-disbursement', \App\Actions\ConfirmDisbursement::class)
+//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
+    ->middleware(['auth:sanctum'])
+    ->name('confirm-disbursement');
+
+Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
+//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
+    ->name('confirm-deposit');
+
+Route::get('/banks', \App\Actions\GetBankData::class)
+    ->name('api-banks');
+
+Route::middleware('auth:sanctum')->get('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class);
