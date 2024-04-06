@@ -2,14 +2,16 @@
 
 namespace App\Providers;
 
-use App\Actions\SendDisbursementFeedbackAction;
-use App\Events\DisbursementConfirmed;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Bavix\Wallet\Internal\Events\TransactionCreatedEventInterface;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Observers\{TransactionObserver, UserObserver};
+use App\Actions\SendDisbursementFeedbackAction;
+use App\Listeners\TransactionCreatedListener;
 use Illuminate\Auth\Events\Registered;
+use App\Events\DisbursementConfirmed;
 use Illuminate\Support\Facades\Event;
-use App\Observers\UserObserver;
-use App\Models\User;
+use App\Models\{Transaction, User};
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -24,7 +26,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         DisbursementConfirmed::class => [
             SendDisbursementFeedbackAction::class
-        ]
+        ],
+        TransactionCreatedEventInterface::class => [
+            TransactionCreatedListener::class
+        ],
     ];
 
     /**
@@ -33,6 +38,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         User::observe(UserObserver::class);
+        Transaction::observe(TransactionObserver::class);
     }
 
     /**

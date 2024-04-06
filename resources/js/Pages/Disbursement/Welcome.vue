@@ -63,7 +63,7 @@ let PHPeso = new Intl.NumberFormat('en-US', {
                 </div>
 
                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                    Send an HTTP POST command to https://disburse.nlitn.io/api/disburse.
+                    Send an HTTP POST command to {{ route('disbursement-payment') }}.
                 </p>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     You may try sending via <span><a :href="route('postman')">Postman</a></span>.

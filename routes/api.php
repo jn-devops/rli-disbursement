@@ -37,12 +37,14 @@ Route::group(['middleware' => 'firewall.middleware.blacklist'], function ()
 
 
 Route::post('/confirm-disbursement', \App\Actions\ConfirmDisbursement::class)
-//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
     ->middleware(['auth:sanctum'])
     ->name('confirm-disbursement');
 
+Route::post('/reject-disbursement', \App\Actions\RejectDisbursement::class)
+    ->middleware(['auth:sanctum'])
+    ->name('reject-disbursement');
+
 Route::post('/confirm-deposit', \App\Actions\ConfirmDepositAction::class)
-//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
     ->name('confirm-deposit');
 
 Route::get('/banks', \App\Actions\GetBankData::class)

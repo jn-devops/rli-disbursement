@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\ModelStatus\HasStatuses;
 use Illuminate\Support\Arr;
 use App\Data\BankData;
 
@@ -12,10 +13,13 @@ use App\Data\BankData;
  * @property string $via
  * @property string $institution
  * @property string $account
+ * @property string $status
  *
  */
 class Transaction extends \Bavix\Wallet\Models\Transaction
 {
+    use HasStatuses;
+
     /**
      * @return Attribute
      */
@@ -72,6 +76,21 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
             },
         );
     }
+
+//    public function getStatusAttribute(): string
+//    {
+//        return match($this->confirmed){
+//            true => Arr::get($this->meta, 'status', 'CONFIRMED') ?: 'CONFIRMED',
+//            false => Arr::get($this->meta, 'status', 'PENDING')  ?: 'PENDING'
+//        };
+//    }
+//
+//    public function setStatusAttribute(?string $value): self
+//    {
+//        $this->meta = array_merge($this->meta ?? [], ['status' => $value]);
+//
+//        return $this;
+//    }
 
     /**
      * @param string $value

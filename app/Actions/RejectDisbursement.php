@@ -4,11 +4,11 @@ namespace App\Actions;
 
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
-use App\Events\DisbursementConfirmed;
+use App\Events\DisbursementRejected;
 use App\Models\Transaction;
 use Illuminate\Support\Arr;
 
-class ConfirmDisbursement
+class RejectDisbursement
 {
     use AsAction;
 
@@ -35,10 +35,12 @@ class ConfirmDisbursement
         logger('$meta = ' . $meta);
         $transaction = Transaction::whereJsonContains('meta->operationId', $operationId)->firstOrFail();
         logger('uuid = '. $transaction->uuid);
-        $user = $transaction->payable;
-        $user->confirm($transaction);
-        DisbursementConfirmed::dispatch($transaction);
+        $transaction->setStatus('REJECTED');
+//        $transaction->status = 'REJECTED';
+        $transaction->save();
 
-        return response('Disbursement confirmed!', 200);
+        DisbursementRejected::dispatch($transaction);
+
+        return response('Disbursement rejected!', 200);
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9fb583592e836fe6a74b20e3b9faab29",
+    "content-hash": "be60ddea19df777693e973d421960e68",
     "packages": [
         {
             "name": "amphp/amp",
@@ -6654,6 +6654,77 @@
                 }
             ],
             "time": "2024-03-01T13:46:35+00:00"
+        },
+        {
+            "name": "spatie/laravel-model-status",
+            "version": "1.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-model-status.git",
+                "reference": "1ac01a9e6078f9f91f50fb04d6e84716258ecc0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-model-status/zipball/1ac01a9e6078f9f91f50fb04d6e84716258ecc0b",
+                "reference": "1ac01a9e6078f9f91f50fb04d6e84716258ecc0b",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0",
+                "pestphp/pest": "^2.34"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\ModelStatus\\ModelStatusServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\ModelStatus\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Verhelst",
+                    "email": "tvke91@gmail.com",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A package to enable assigning statuses to Eloquent Models",
+            "homepage": "https://github.com/spatie/laravel-model-status",
+            "keywords": [
+                "laravel-status",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-model-status/issues",
+                "source": "https://github.com/spatie/laravel-model-status/tree/1.15.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                }
+            ],
+            "time": "2024-03-08T14:56:14+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",

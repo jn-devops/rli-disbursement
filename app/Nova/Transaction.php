@@ -72,7 +72,10 @@ class Transaction extends Resource
                 return is_numeric($name) ? str_pad($name, 5, "0", STR_PAD_LEFT) : $name;
             })->sortable(),
             Text::make('OperationId', 'meta->operationId')->sortable()->hideFromIndex(),
-            Boolean::make('Confirmed')->sortable(),
+            Boolean::make('Confirmed')->sortable()->hideFromIndex(),
+            Text::make('Status', function () {
+                return strtolower($this->status);
+            })->sortable(),
             DateTime::make('Created', 'created_at')->sortable()->hideFromIndex(),
             DateTime::make('Updated', 'updated_at')->sortable(),
         ];
