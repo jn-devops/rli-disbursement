@@ -6,6 +6,7 @@ use Brick\Math\Exception\{MathException, NumberFormatException, RoundingNecessar
 use App\Data\{AmountData, DestinationAccountData, GatewayResponseData, RecipientData};
 use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Brick\Money\Exception\UnknownCurrencyException;
+use App\Models\{Product, Reference, User};
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Validation\Validator;
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\Http;
 use App\Classes\{Address, Gateway};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\{Product, User};
 use Bavix\Wallet\Objects\Cart;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
@@ -72,7 +72,7 @@ class RequestDisbursementAction
 
         /********************* start of disbursement request ************************/
         $payload = [
-            "reference_id" => Arr::get($validated, 'reference'),
+            "reference_id" => $reference =  Arr::get($validated, 'reference'),
             "settlement_rail" => Arr::get($validated, 'via'),
             "amount" => $amount = $this->getAmountArray($validated),
             "source_account_number" => config('disbursement.source.account_number'),
@@ -87,18 +87,23 @@ class RequestDisbursementAction
         $response = Http::withHeaders($this->gateway->getHeaders())
             ->asJson()
             ->post(
-                $this->gateway->getEndPoint(), $payload
+                $this->gateway->getDisbursementEndPoint(), $payload
             );
 
         /********************* end of disbursement request ************************/
 
         if ($response->successful()) {
             $meta = [
-                'operationId' => $response->json('transaction_id'),
+                'operationId' => $operationId = $response->json('transaction_id'),
                 'details' => $payload
             ];
             $transaction->meta = $meta;
             $transaction->save();
+
+            tap(new Reference(['code' => $reference, 'operation_id' => $operationId]), function ($reference) use ($user, $transaction) {
+                $reference->user()->associate($user);
+                $reference->transaction()->associate($transaction);
+            })->save();
 
             DB::commit();
             $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());

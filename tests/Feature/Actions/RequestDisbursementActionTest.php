@@ -12,8 +12,9 @@ use App\Actions\RequestDisbursementAction;
 use App\Data\GatewayResponseData;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
-
 use Tests\TestCase;
+
+use App\Models\Reference;
 
 class RequestDisbursementActionTest extends TestCase
 {
@@ -37,7 +38,7 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertEquals($initialAmountFloat, $user->balanceFloat);
         $credits = Money::of(100, 'PHP');
         $response = app(RequestDisbursementAction::class)->run($user, [
-            'reference' => $this->faker->uuid(),
+            'reference' => $reference = $this->faker->uuid(),
             'bank' => 'CUOBPHM2XXX',
             'account_number' => '039000000052',
             'via' => 'INSTAPAY',
@@ -47,8 +48,16 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertGreaterThan(1000000, $response->transaction_id);
         $this->assertEquals('Pending', $response->status);
 
+        //check reference table
+        $refObject = Reference::where('code', $reference)->first();
+        $this->assertEquals($reference, $refObject->code);
+        $this->assertEquals($response->transaction_id, $refObject->operation_id);
+        $this->assertEquals($user->id, $refObject->user_id);
+        $this->assertTrue($refObject->user->is($user));
+
         //extract the transaction record from the operationId
         $transaction = Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first();
+        $this->assertTrue($refObject->transaction->is($transaction));
         $this->assertTrue($transaction->payable->is($user));
 
         //since it is not confirmed, the use balance should still be the same until it is confirmed by the bank (old)

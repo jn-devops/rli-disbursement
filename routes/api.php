@@ -28,10 +28,11 @@ Route::group(['middleware' => 'firewall.middleware.blacklist'], function ()
     Route::group(['middleware' => 'firewall.middleware.whitelist'], function ()
     {
         Route::post('/disburse', \App\Actions\RequestDisbursementAction::class)
-//    ->middleware(['auth:sanctum', 'ability:disburse:account'])
             ->middleware(['auth:sanctum'])
             ->name('disbursement-payment');
-
+        Route::get('/status/{code}',  \App\Actions\GetDisbursementStatusAction::class)
+            ->middleware('auth:sanctum')
+            ->name('disbursement-status');
     });
 });
 
@@ -51,3 +52,5 @@ Route::get('/banks', \App\Actions\GetBankData::class)
     ->name('api-banks');
 
 Route::middleware('auth:sanctum')->get('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class);
+
+

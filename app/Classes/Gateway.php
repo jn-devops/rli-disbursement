@@ -47,9 +47,19 @@ class Gateway
     /**
      * @return string
      */
-    public function getEndPoint(): string
+    public function getDisbursementEndPoint(): string
     {
         return config('disbursement.server.end-point');
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusEndPoint(string $operationId): string
+    {
+        $urlTemplate = config('disbursement.server.status-end-point');
+
+        return __($urlTemplate, ['operationId' => $operationId]);
     }
 
     /**
