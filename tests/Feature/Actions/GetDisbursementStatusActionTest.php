@@ -78,13 +78,15 @@ class GetDisbursementStatusActionTest extends TestCase
     public function test_action_gets_disbursement_status()
     {
         $operationId = '29187603';
+        $reference = Reference::factory()->create(['operation_id' => $operationId]);
+        $this->assertEmpty($reference->status);
         $url = $this->gateway->getStatusEndPoint($operationId);
         $header = $this->gateway->getHeaders();
         Http::fake([$url => Http::response($this->response, 200, $header)]);
         $fractal = $this->action->run($this->user, $operationId);
-
         $this->assertInstanceOf(Fractal::class, $fractal);
         $this->assertEquals($operationId, $fractal->toArray()['data']['transaction_id']);
+        $this->assertEquals($fractal->toArray(), $reference->fresh()->status);
     }
 
     public function test_action_gets_disbursement_status_from_end_point()
