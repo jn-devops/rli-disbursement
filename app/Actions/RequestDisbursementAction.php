@@ -8,6 +8,7 @@ use Bavix\Wallet\Internal\Exceptions\ExceptionInterface;
 use Brick\Money\Exception\UnknownCurrencyException;
 use App\Models\{Product, Reference, User};
 use Lorisleiva\Actions\Concerns\AsAction;
+use App\Events\DisbursementRequested;
 use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Http;
@@ -91,21 +92,20 @@ class RequestDisbursementAction
             );
 
         /********************* end of disbursement request ************************/
-
         if ($response->successful()) {
+            //TODO: deprecate $meta
             $meta = [
                 'operationId' => $operationId = $response->json('transaction_id'),
-                'details' => $payload
+                'details' => $payload,//TODO: deprecate
+                'request' => [
+                    'user_id' => $user->id,
+                    'payload' => $payload
+                ]
             ];
             $transaction->meta = $meta;
             $transaction->save();
-
-            tap(new Reference(['code' => $reference, 'operation_id' => $operationId]), function ($reference) use ($user, $transaction) {
-                $reference->user()->associate($user);
-                $reference->transaction()->associate($transaction);
-            })->save();
-
             DB::commit();
+            DisbursementRequested::dispatch($transaction, $validated, $payload, $response->json());
             $responseData = array_merge(['uuid' => $transaction->uuid], $response->json());
 
             return GatewayResponseData::from($responseData);

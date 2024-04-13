@@ -7,8 +7,10 @@ use Bavix\Wallet\Internal\Events\TransactionCreatedEventInterface;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use App\Observers\{TransactionObserver, UserObserver};
 use App\Actions\SendDisbursementFeedbackAction;
+use App\Listeners\CreateDisbursementReference;
 use App\Listeners\TransactionCreatedListener;
 use Illuminate\Auth\Events\Registered;
+use App\Events\DisbursementRequested;
 use App\Events\DisbursementConfirmed;
 use Illuminate\Support\Facades\Event;
 use App\Models\{Transaction, User};
@@ -29,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TransactionCreatedEventInterface::class => [
             TransactionCreatedListener::class
+        ],
+        DisbursementRequested::class => [
+            CreateDisbursementReference::class
         ],
     ];
 

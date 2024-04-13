@@ -9,6 +9,8 @@ use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Illuminate\Support\Facades\Notification;
 use App\Models\{Product, Transaction, User};
 use App\Actions\RequestDisbursementAction;
+use App\Events\DisbursementRequested;
+use Illuminate\Support\Facades\Event;
 use App\Data\GatewayResponseData;
 use Illuminate\Support\Arr;
 use Brick\Money\Money;
@@ -31,6 +33,7 @@ class RequestDisbursementActionTest extends TestCase
     /** @test */
     public function request_disbursement_action_works_with_product_service_fee(): void
     {
+        Event::fake(DisbursementRequested::class);
         $initialAmountFloat = 1000;
         $user = tap(User::factory()->createQuietly(['meta->service->tf' => 0, 'mdr' => 0]), function ($user) use ($initialAmountFloat) {
             $user->depositFloat($initialAmountFloat);
@@ -48,16 +51,8 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertGreaterThan(1000000, $response->transaction_id);
         $this->assertEquals('Pending', $response->status);
 
-        //check reference table
-        $refObject = Reference::where('code', $reference)->first();
-        $this->assertEquals($reference, $refObject->code);
-        $this->assertEquals($response->transaction_id, $refObject->operation_id);
-        $this->assertEquals($user->id, $refObject->user_id);
-        $this->assertTrue($refObject->user->is($user));
-
         //extract the transaction record from the operationId
         $transaction = Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first();
-        $this->assertTrue($refObject->transaction->is($transaction));
         $this->assertTrue($transaction->payable->is($user));
 
         //since it is not confirmed, the use balance should still be the same until it is confirmed by the bank (old)
@@ -71,6 +66,41 @@ class RequestDisbursementActionTest extends TestCase
 
         $expectedServiceFee = Money::ofMinor($tf + $mdr * $credits->getAmount()->toInt(), 'PHP');
         $this->assertEquals($initialAmountFloat - $expectedServiceFee->getAmount()->toFloat(), $user->balanceFloat);
+
+        Event::assertDispatched(DisbursementRequested::class, function ($event) use ($transaction) {
+            return $transaction->is($event->transaction);
+        });
+    }
+
+    /** @test */
+    public function request_disbursement_action_persists_reference(): void
+    {
+        $initialAmountFloat = 1000;
+        $user = tap(User::factory()->createQuietly(['meta->service->tf' => 0, 'mdr' => 0]), function ($user) use ($initialAmountFloat) {
+            $user->depositFloat($initialAmountFloat);
+        });
+        $this->assertEquals($initialAmountFloat, $user->balanceFloat);
+        $credits = Money::of(100, 'PHP');
+        $response = app(RequestDisbursementAction::class)->run($user, $inputs = [
+            'reference' => $reference = $this->faker->uuid(),
+            'bank' => $bank = 'CUOBPHM2XXX',
+            'account_number' => $account_number = '039000000052',
+            'via' => 'INSTAPAY',
+            'amount' => $credits->getAmount()->toInt()
+        ]);
+        //check reference table
+        $refObject = Reference::where('code', $reference)->first();
+        $this->assertEquals($reference, $refObject->code);
+        $this->assertEquals($response->transaction_id, $refObject->operation_id);
+        $this->assertEquals($user->id, $refObject->user_id);
+        $this->assertTrue($refObject->user->is($user));
+        tap(Transaction::whereJsonContains('meta->operationId', $response->transaction_id)->first(), function ($transaction) use ($refObject) {
+            $this->assertTrue($refObject->transaction->is($transaction));
+        });
+        $this->assertEquals($inputs, $refObject->inputs);
+        $this->assertEquals($reference, $refObject->request['reference_id']);//transform this and assert that it is equal to the request
+        $this->assertEquals(['transaction_id' => $refObject->operation_id,'status' =>'Pending'], $refObject->response);//transform this and assert that it is equal to the response
+        $this->assertEmpty($refObject->status);
     }
 
     /** @test */
@@ -223,7 +253,7 @@ class RequestDisbursementActionTest extends TestCase
         $this->assertFalse($transaction->confirmed);
         $this->assertEquals('PENDING', $transaction->status);
 
-        $details = Arr::get($transaction->meta, 'details');
+        $details = Arr::get($transaction->meta, 'request.payload');
         $this->assertEquals($payload['reference'], $details['reference_id']);
         $this->assertEquals($payload['bank'], $details['destination_account']['bank_code']);
         $this->assertEquals($payload['account_number'], $details['destination_account']['account_number']);

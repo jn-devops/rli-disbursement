@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string      $operation_id
  * @property User        $user
  * @property Transaction $transaction
+ * @property array       $inputs
+ * @property array       $request
+ * @property array       $response
+ * @property array       $status
  *
  * @method   int    getKey()
  */
@@ -21,7 +25,14 @@ class Reference extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code', 'operation_id'];
+    protected $fillable = ['code', 'operation_id', 'inputs', 'request', 'response', 'status'];
+
+    protected $casts = [
+        'inputs' => 'array',
+        'request' => 'array',
+        'response' => 'array',
+        'status' => 'array',
+    ];
 
     public function user(): BelongsTo
     {
