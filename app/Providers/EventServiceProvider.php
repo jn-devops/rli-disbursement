@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\DisbursementRejected;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Bavix\Wallet\Internal\Events\TransactionCreatedEventInterface;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -9,6 +10,7 @@ use App\Observers\{TransactionObserver, UserObserver};
 use App\Actions\SendDisbursementFeedbackAction;
 use App\Listeners\CreateDisbursementReference;
 use App\Listeners\TransactionCreatedListener;
+use App\Listeners\UpdateReferenceStatus;
 use Illuminate\Auth\Events\Registered;
 use App\Events\DisbursementRequested;
 use App\Events\DisbursementConfirmed;
@@ -27,7 +29,11 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         DisbursementConfirmed::class => [
-            SendDisbursementFeedbackAction::class
+            SendDisbursementFeedbackAction::class,
+            UpdateReferenceStatus::class//TODO: Test this
+        ],
+        DisbursementRejected::class => [
+            UpdateReferenceStatus::class//TODO: Test this
         ],
         TransactionCreatedEventInterface::class => [
             TransactionCreatedListener::class
