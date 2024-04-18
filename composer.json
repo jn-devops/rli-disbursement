@@ -19,6 +19,7 @@
         "laravel/tinker": "^2.8",
         "lorisleiva/laravel-actions": "^2.7",
         "markwalet/nova-modal-response": "^0.3.0",
+        "naoray/nova-json": "^3.0",
         "pragmarx/firewall": "^2.3",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-data": "^4.1",

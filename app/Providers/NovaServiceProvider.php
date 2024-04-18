@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Nova\Reference;
 use Laravel\Nova\Menu\{MenuItem, MenuSection};
 use Laravel\Nova\NovaApplicationServiceProvider;
 use Laravel\Nova\Events\ServingNova;
@@ -50,6 +51,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             return [
                 MenuSection::make(config('app.name'), [
                     MenuItem::resource(User::class)->name('Accounts'),
+//                    MenuItem::resource(Reference::class)->name('References'),
                     MenuItem::make('Profile')->path('../user/profile'),
                     MenuItem::make('API Tokens')->path('../user/api-tokens'),
                     MenuItem::make('Outgoing')->path('../outgoing')

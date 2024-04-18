@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Bavix\Wallet\Interfaces\{Confirmable, Customer, WalletFloat};
 use Bavix\Wallet\Traits\{CanConfirm, CanPay, HasWallet};
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -165,5 +166,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Confirmable, 
     public function routeNotificationForWebhook(): string
     {
         return $this->webhook;
+    }
+
+    public function references(): HasMany
+    {
+        return $this->hasMany(Reference::class);
     }
 }

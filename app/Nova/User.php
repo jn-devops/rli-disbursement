@@ -108,6 +108,10 @@ class User extends Resource
             HasMany::make('Transfers')
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
+
+            HasMany::make('References')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
         ];
     }
 
