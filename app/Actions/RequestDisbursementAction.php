@@ -93,6 +93,8 @@ class RequestDisbursementAction
 
         /********************* end of disbursement request ************************/
         if ($response->successful()) {
+            logger('$response->successful()');
+
             //TODO: deprecate $meta
             $meta = [
                 'operationId' => $operationId = $response->json('transaction_id'),
@@ -111,6 +113,9 @@ class RequestDisbursementAction
             return GatewayResponseData::from($responseData);
         }
         else {
+            logger('not $response->successful()');
+            logger('$response->body()');
+            logger($response->body());
             DB::rollBack();
 
             return false;
@@ -188,6 +193,11 @@ class RequestDisbursementAction
         logger($request->validated());
 
         $response = $this->disburse($user, $request->validated());
+
+        if (false === $response) {
+            logger('false === $response');
+            return response('Gateway Error!', 502);
+        }
         logger('response->toJson()');
         logger($response->toJson());
 
