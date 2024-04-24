@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Actions\SendDepositFeedbackAction;
+use App\Events\DepositConfirmed;
 use App\Events\DisbursementRejected;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Bavix\Wallet\Internal\Events\TransactionCreatedEventInterface;
@@ -40,6 +42,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         DisbursementRequested::class => [
             CreateDisbursementReference::class
+        ],
+        DepositConfirmed::class => [
+            SendDepositFeedbackAction::class
         ],
     ];
 

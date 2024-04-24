@@ -20,6 +20,17 @@ class Transaction extends \Bavix\Wallet\Models\Transaction
 {
     use HasStatuses;
 
+    static public function from(\Bavix\Wallet\Models\Transaction $transaction): self
+    {
+        $model = new Transaction();
+        $model->setRawAttributes($transaction->getAttributes(), true);
+        $model->exists = true;
+        $model->setConnection($transaction->getConnectionName());
+        $model->fireModelEvent('retrieved', false);
+
+        return $model;
+    }
+
     /**
      * @return Attribute
      */

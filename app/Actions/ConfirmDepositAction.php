@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Transaction;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\ActionRequest;
 use App\Data\DepositResponseData;
@@ -32,7 +33,7 @@ class ConfirmDepositAction
         $transfer = TopupWalletAction::run($user, $amountFloat);
         $transfer->deposit->meta = $response->toArray();
         $transfer->deposit->save();
-        DepositConfirmed::dispatch($transfer->deposit);
+        DepositConfirmed::dispatch(Transaction::from($transfer->deposit));
 
         return $response;
     }

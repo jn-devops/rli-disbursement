@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\Channel;
-use Bavix\Wallet\Models\Transaction;
+use App\Models\Transaction;
 use Brick\Money\Money;
 
 class DepositConfirmed implements ShouldBroadcast
@@ -40,7 +40,7 @@ class DepositConfirmed implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'disbursement.confirmed';
+        return 'deposit.confirmed';
     }
 
     public function broadcastWith(): array
