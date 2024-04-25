@@ -20,11 +20,12 @@ class SendDepositFeedbackAction
     {
         logger('SendDepositFeedbackAction@handle');
         $user = $transaction->payable;
+        $user_deposit_endpoint = 'https://members-fibi.qrx.com.ph/api/v1/webhook/qrph';
         if ($user instanceof User)
-            if (filter_var($user->webhook, FILTER_VALIDATE_URL)) {
-                logger('filter_var($user->webhook, FILTER_VALIDATE_URL)');
+            if (filter_var($user_deposit_endpoint, FILTER_VALIDATE_URL)) {
+                logger('filter_var($user_deposit_endpoint, FILTER_VALIDATE_URL)');
                 WebhookCall::create()
-                    ->url($user->webhook)
+                    ->url($user_deposit_endpoint)
                     ->payload([
                         'payload' => [
                             'webhook' => $transaction->meta
