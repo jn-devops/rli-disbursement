@@ -19,14 +19,24 @@ class ConfirmDepositAction
      */
     protected function deposit(array $validated): DepositResponseData
     {
+        logger('ConfirmDepositAction@deposit');
         $response = DepositResponseData::from($validated);
+        logger('$response = ');
+        logger($response->toArray());
         $amountFloat = $response->amount;
+        logger('$amountFloat = ');
+        logger($amountFloat);
 
         /**  merchant details processing **/
             if (null == $user = User::where('mobile', $response->referenceCode)->first()) {
+                logger('null == $user');
                 if (strlen($merchant_code = $response->merchant_details->merchant_code) == 1) {
+                    logger('$merchant_code = $response->merchant_details->merchant_code) == 1');
                     $user = User::where('meta->merchant->code', $merchant_code)->firstOrFail();
+                    logger('$user = ');
                 }
+                logger('$user = ');
+                logger($user->toArray());
             };
         /**             end              **/
 
