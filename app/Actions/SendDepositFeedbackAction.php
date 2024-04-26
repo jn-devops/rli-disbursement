@@ -26,6 +26,8 @@ class SendDepositFeedbackAction
         if ($user instanceof User)
             if (filter_var($user_deposit_endpoint, FILTER_VALIDATE_URL)) {
                 logger('filter_var($user_deposit_endpoint, FILTER_VALIDATE_URL)');
+                logger('$transaction->meta = ');
+                logger($transaction->meta);
                 WebhookCall::create()
                     ->url($user_deposit_endpoint)
                     ->payload([
