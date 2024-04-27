@@ -5,6 +5,7 @@ namespace App\Actions;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Math\Exception\NumberFormatException;
+use Illuminate\Http\Response;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Brick\Math\Exception\MathException;
 use Illuminate\Http\RedirectResponse;
@@ -21,6 +22,8 @@ class GenerateDepositQRCodeAction
 
     const AMOUNT_FIELD = 'amount';
     const ACCOUNT_FIELD = 'account';
+
+    protected string $imageBytes;
 
     public function __construct(protected Gateway $gateway)
     {
@@ -112,33 +115,32 @@ class GenerateDepositQRCodeAction
 //        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'account'));
         $credits = Money::of($validated['amount'] ?: 0, 'PHP');
         $account = Arr::get($validated, 'account');
-        $imageBytes = $this->getQRCode($user, $credits, $account);
+        $this->imageBytes = $this->getQRCode($user, $credits, $account);
 
         return back()->with('event', [
             'name' => 'qrcode.generated',
-            'data' => $imageBytes,
+            'data' => $this->imageBytes,
         ]);
     }
 
-    public function jsonResponse($response, ActionRequest $request): string
+    public function jsonResponse($response, ActionRequest $request)
     {
-//        $user = $request->user();
-//        $validated = $request->validated();
-//
-//        return $this->handle($user, $validated['amount'] ?: 0);
         logger('GenerateDepositQRCodeAction@jsonResponse');
-        logger('$response = ');
-        logger($response);
+        logger('$this->imageBytes = ');
+        logger($this->imageBytes);
 
-        return Arr::get($response, 'data');
+        return $this->imageBytes;
     }
 
-    public function htmlResponse($response, ActionRequest $request): \Illuminate\Http\Response
+    public function htmlResponse($response, ActionRequest $request)
     {
         logger('GenerateDepositQRCodeAction@htmlResponse');
-        logger('$response = ');
-        logger($response);
+        logger('$this->imageBytes = ');
+        logger($this->imageBytes);
 
-        return Arr::get($response, 'data');
+        $response = Response::make($this->imageBytes, 200);
+        $response->header('Content-Type', 'text/plain');
+
+        return $response;
     }
 }
