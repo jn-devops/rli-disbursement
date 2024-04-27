@@ -123,24 +123,12 @@ class GenerateDepositQRCodeAction
         ]);
     }
 
-    public function jsonResponse($response, ActionRequest $request)
+    public function jsonResponse($response, ActionRequest $request): string
     {
         logger('GenerateDepositQRCodeAction@jsonResponse');
         logger('$this->imageBytes = ');
         logger($this->imageBytes);
 
         return $this->imageBytes;
-    }
-
-    public function htmlResponse($response, ActionRequest $request)
-    {
-        logger('GenerateDepositQRCodeAction@htmlResponse');
-        logger('$this->imageBytes = ');
-        logger($this->imageBytes);
-
-        $response = Response::make($this->imageBytes, 200);
-        $response->header('Content-Type', 'text/plain');
-
-        return $response;
     }
 }
