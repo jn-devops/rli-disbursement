@@ -70,7 +70,10 @@ class GenerateDepositQRCodeAction
      */
     public function handle(User $user, int $amount = null, string $account = null): string
     {
+        logger('GenerateDepositQRCodeAction@handle');
         $credits = Money::of($amount ?: 0, 'PHP');
+        logger('$credits');
+        logger($credits);
 
         return $this->getQRCode($user, $credits, $account);
     }
@@ -106,7 +109,10 @@ class GenerateDepositQRCodeAction
         logger($validated['amount']);
         logger('Arr::get($validated, account)');
         logger(Arr::get($validated, 'account'));
-        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'account'));
+//        $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'account'));
+        $credits = Money::of($validated['amount'] ?: 0, 'PHP');
+        $account = Arr::get($validated, 'account');
+        $imageBytes = $this->getQRCode($user, $credits, $account);
 
         return back()->with('event', [
             'name' => 'qrcode.generated',
