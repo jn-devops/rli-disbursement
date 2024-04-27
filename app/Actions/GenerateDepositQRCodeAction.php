@@ -35,8 +35,15 @@ class GenerateDepositQRCodeAction
      */
     protected function getQRCode(User $user, Money $credits, string $account = null): string
     {
+        logger('GenerateDepositQRCodeAction@getQRCode');
+        logger('$account = ');
+        logger($account);
         $merchant_code = $account ? $user->merchant_code : null;
+        logger('$merchant_code = ');
+        logger($merchant_code);
         $account = $account ?: $user->mobile;
+        logger('$account = $account ?: $user->mobile');
+        logger($account);
         $response = Http::withHeaders($this->gateway->getHeaders())->post($this->gateway->getQREndPoint(),  [
             "merchant_name" => $user->merchant_name,
             "merchant_city" => $user->merchant_city,
@@ -50,6 +57,8 @@ class GenerateDepositQRCodeAction
             ]
         ]);
         $data = $response->json('qr_code');
+        logger('data');
+        logger($data);
 
         return 'data:image/png;base64,' . $data;
     }
@@ -86,8 +95,17 @@ class GenerateDepositQRCodeAction
      */
     public function asController(ActionRequest $request): RedirectResponse
     {
+        logger('GenerateDepositQRCodeAction@asController');
         $user = $request->user();
+        logger('$user = ');
+        logger($user);
         $validated = $request->validated();
+        logger('validated =');
+        logger($validated);
+        logger('$validated[amount]');
+        logger($validated['amount']);
+        logger('Arr::get($validated, account)');
+        logger(Arr::get($validated, 'account'));
         $imageBytes = $this->handle($user, $validated['amount'] ?: 0, Arr::get($validated, 'account'));
 
         return back()->with('event', [
