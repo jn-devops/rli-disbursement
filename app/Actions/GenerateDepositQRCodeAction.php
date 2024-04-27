@@ -120,20 +120,25 @@ class GenerateDepositQRCodeAction
         ]);
     }
 
-    /**
-     * @param RedirectResponse $response
-     * @param ActionRequest $request
-     * @return string
-     * @throws NumberFormatException
-     * @throws RoundingNecessaryException
-     * @throws UnknownCurrencyException
-     * @throws MathException
-     */
-    public function jsonResponse(RedirectResponse $response, ActionRequest $request): string
+    public function jsonResponse($response, ActionRequest $request): string
     {
-        $user = $request->user();
-        $validated = $request->validated();
+//        $user = $request->user();
+//        $validated = $request->validated();
+//
+//        return $this->handle($user, $validated['amount'] ?: 0);
+        logger('GenerateDepositQRCodeAction@jsonResponse');
+        logger('$response = ');
+        logger($response);
 
-        return $this->handle($user, $validated['amount'] ?: 0);
+        return Arr::get($response, 'data');
+    }
+
+    public function htmlResponse($response, ActionRequest $request): \Illuminate\Http\Response
+    {
+        logger('GenerateDepositQRCodeAction@htmlResponse');
+        logger('$response = ');
+        logger($response);
+
+        return Arr::get($response, 'data');
     }
 }
