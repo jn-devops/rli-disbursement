@@ -53,4 +53,6 @@ Route::get('/banks', \App\Actions\GetBankData::class)
 
 Route::middleware('auth:sanctum')->get('/generate-qr',  \App\Actions\GenerateDepositQRCodeAction::class);
 
-
+Route::post('/kwyc-cash', \App\Actions\RequestDisbursementAction::class)
+    ->middleware(['auth:sanctum'])
+    ->name('kwyc-cash');
