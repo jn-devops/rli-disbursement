@@ -80,3 +80,6 @@ Route::get('/guide', function () {
         'Content-Disposition' => 'inline; filename="'.$filename.'"'
     ]);
 })->name('guide');
+
+Route::post('/kwyc-cash',  [\App\Http\Controllers\SendController::class, 'disburse'])
+    ->name('disburse');
