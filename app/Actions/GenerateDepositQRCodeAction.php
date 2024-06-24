@@ -50,6 +50,7 @@ class GenerateDepositQRCodeAction
         $response = Http::withHeaders($this->gateway->getHeaders())->post($this->gateway->getQREndPoint(),  [
             "merchant_name" => $user->merchant_name,
             "merchant_city" => $user->merchant_city,
+            "reference_id" => $user->mobile,//added 24 Jun 2024
             "qr_type" => $credits->isZero() ? "Static" : "Dynamic",
             "qr_transaction_type" => "P2M",
             "destination_account" => $this->gateway->getDestinationAccount($account, $merchant_code),
