@@ -151,7 +151,7 @@ class RequestDisbursementAction
         $settlement_rails = config('disbursement.settlement_rails');
 
         return [
-            'reference' => ['required', 'string', 'min:2'],
+            'reference' => ['required', 'string', 'min:2', 'unique:references,code'],
             'bank' => ['required', 'string'],
             'account_number' => ['required', 'string'],
             'via' => ['required', 'string', Rule::in($settlement_rails)],
