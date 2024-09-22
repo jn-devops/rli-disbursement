@@ -159,6 +159,13 @@ class RequestDisbursementAction
         ];
     }
 
+    public function getValidationMessages(): array
+    {
+        return [
+            'reference.unique' => 'Amount disbursed already. The reference has already been taken.',
+        ];
+    }
+
     public function afterValidator(Validator $validator, ActionRequest $request): void
     {
         $user = $request->user();
