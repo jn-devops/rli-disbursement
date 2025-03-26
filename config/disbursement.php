@@ -26,6 +26,10 @@ return [
     ],
     'min' => env('MINIMUM_DISBURSEMENT', 1),
     'max' => env('MAXIMUM_DISBURSEMENT', 2),
+    'variance' => [
+        'min' => env('MINIMUM_VARIANCE', 0),
+        'max' => env('MAXIMUM_VARIANCE', 0),
+    ],
     'threshold_balance' => env('THRESHOLD_BALANCE', 2), //major
     'settlement_rails' =>   explode(',', env('SETTLEMENT_RAILS', 'INSTAPAY,PESONET')),
     'user' => [

@@ -248,6 +248,8 @@ class RequestDisbursementAction
     protected function getAmountArray(array $validated): array
     {
         $minor_amount = Money::of(Arr::get($validated, 'amount'), $this->currency)->getMinorAmount()->toInt();
+        $variance = rand(config('disbursement.variance.min'), config('disbursement.variance.max'));
+        $minor_amount = $minor_amount + $variance;
 
         return AmountData::from([
             'cur' => $this->currency,
